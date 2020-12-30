@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Learn.Models.Student
+namespace Learn.Models.Entity
 {
     public class Student :BaseModel
     {

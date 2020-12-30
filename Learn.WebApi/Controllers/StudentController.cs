@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Learn.Models;
+using Learn.Models.Business;
 using Learn.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -76,6 +78,18 @@ namespace Learn.WebApi.Controllers
         }
 
 
+        [HttpPost("AddMany")]
+        public IActionResult AddMany([FromBody] dynamic value)
+        {
+            JObject @object = JObject.Parse(value.ToString());
+            StudentList students = @object.ToObject<StudentList>();
+
+            MongodbService<Learn.Models.Entity.Student, StudentSearch> mongodbService = new MongodbService<Learn.Models.Entity.Student, StudentSearch>("student");
+            mongodbService.AddMany(students.Students);
+            _logger.LogInformation($"增加了{students.Students.Count}条记录");
+            return Ok();
+        }
+
         [HttpGet("GetStudent/{guid?}")]
         public IActionResult GetStudent(string guid = "")
         {
@@ -98,10 +112,11 @@ namespace Learn.WebApi.Controllers
         }
 
         [HttpGet("GetStudentsAsync")]
-        public async Task<IEnumerable<Learn.Models.Student.Student>> GetStudentsAsync()
+        public async Task<IEnumerable<Learn.Models.Entity.Student>> GetStudentsAsync()
         {
-            MongodbService<Learn.Models.Student.Student> service = new MongodbService<Learn.Models.Student.Student>("student");
-            return await service.GetAsync();
+            MongodbService<Learn.Models.Entity.Student, StudentSearch> service = new MongodbService<Learn.Models.Entity.Student, StudentSearch>("student");
+            //return await service.GetAsync();
+            return await service.GetListAsync(c=>c.FirstName=="liu");
         }
     }
 }

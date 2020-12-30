@@ -4,12 +4,16 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Mongodb.Service
 {
-    public class MongodbService<T> where T : BaseModel
+    public class MongodbService<T, S>
+        where T : BaseModel
+        where S : BaseSearchModel
+
     {
         protected readonly IMongoCollection<T> collection;
 
@@ -36,6 +40,11 @@ namespace Mongodb.Service
             return t;
         }
 
+        public void AddMany(List<T> list)
+        {
+            collection.InsertMany(list);
+        }
+
         public void Update(string id, T tin)
         {
             collection.ReplaceOne(t => t.Id == id, tin);
@@ -52,8 +61,29 @@ namespace Mongodb.Service
 
             filters.Add(Builders<T>.Filter.Empty);
             var filter = Builders<T>.Filter.And(filters);
-            var fullCollection= await collection.FindAsync(filter);
+            var fullCollection = await collection.FindAsync(filter);
             return await fullCollection.ToListAsync();
+        }
+
+        public async Task<List<T>> GetListAsync(Expression<Func<T, bool>> expression)
+        {
+            var filters = new List<FilterDefinition<T>>();
+            filters.Add(GetAction(expression));
+            var filter = Builders<T>.Filter.And(filters);
+            var fullCollectioin = await collection.FindAsync(filter);
+            return await fullCollectioin.ToListAsync();
+        }
+
+        public FilterDefinition<T> GetAction(Expression<Func<T, bool>> expression)
+        {
+            if (null == expression)
+            {
+                return Builders<T>.Filter.Empty;
+            }
+            else
+            {
+                return Builders<T>.Filter.Where(expression);
+            }
         }
     }
 }
