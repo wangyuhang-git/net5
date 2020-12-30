@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learn.NetCore", "Learn.NetCore\Learn.NetCore.csproj", "{7661EB90-ACFA-4926-97AB-DF5D7BA53D63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Learn.NetCore", "Learn.NetCore\Learn.NetCore.csproj", "{7661EB90-ACFA-4926-97AB-DF5D7BA53D63}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Learn.Common", "Learn.Common\Learn.Common.csproj", "{20FFB7C3-4617-4620-BA3C-3E2EE66CF2AD}"
 EndProject
@@ -12,6 +12,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Learn.WebApi", "Learn.WebApi\Learn.WebApi.csproj", "{5EA0454F-565D-4D9D-98CE-C0E599533D14}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mongodb.Service", "Mongodb.Service\Mongodb.Service.csproj", "{6D69BBCF-EFE3-4CAB-A659-24E3011C1DCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learn.Business", "Learn.Business\Learn.Business.csproj", "{A61AC73B-EF40-42C0-8120-A0AD5E179D45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learn.Interface", "Learn.Interface\Learn.Interface.csproj", "{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{6D69BBCF-EFE3-4CAB-A659-24E3011C1DCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D69BBCF-EFE3-4CAB-A659-24E3011C1DCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D69BBCF-EFE3-4CAB-A659-24E3011C1DCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A61AC73B-EF40-42C0-8120-A0AD5E179D45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A61AC73B-EF40-42C0-8120-A0AD5E179D45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A61AC73B-EF40-42C0-8120-A0AD5E179D45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A61AC73B-EF40-42C0-8120-A0AD5E179D45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

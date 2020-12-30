@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Learn.Business.Student;
+using Learn.Interface;
 using Learn.Models;
 using Learn.Models.Business;
 using Learn.WebApi.Models;
@@ -111,12 +113,14 @@ namespace Learn.WebApi.Controllers
             return Ok(list);
         }
 
-        [HttpGet("GetStudentsAsync")]
-        public async Task<IEnumerable<Learn.Models.Entity.Student>> GetStudentsAsync()
+        [HttpGet("GetStudentsAsync/{name?}")]
+        public async Task<IEnumerable<Learn.Models.Entity.Student>> GetStudentsAsync(string name = "")
         {
-            MongodbService<Learn.Models.Entity.Student, StudentSearch> service = new MongodbService<Learn.Models.Entity.Student, StudentSearch>("student");
-            //return await service.GetAsync();
-            return await service.GetListAsync(c=>c.FirstName=="liu");
+            //MongodbService<Learn.Models.Entity.Student, StudentSearch> service = new MongodbService<Learn.Models.Entity.Student, StudentSearch>("student");
+            //return await service.GetListAsync(c => string.IsNullOrEmpty(name) || c.FirstName == name);
+
+            ISutdent studentBusiness = new StudentBusiness();
+            return await studentBusiness.GetStudentsAsync(name);
         }
     }
 }
