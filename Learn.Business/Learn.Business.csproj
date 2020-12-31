@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Learn.Common\Learn.Common.csproj" />
     <ProjectReference Include="..\Learn.Interface\Learn.Interface.csproj" />
     <ProjectReference Include="..\Learn.Models\Learn.Models.csproj" />
     <ProjectReference Include="..\Mongodb.Service\Mongodb.Service.csproj" />

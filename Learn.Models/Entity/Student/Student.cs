@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Learn.Models.Entity
 {
-    public class Student :BaseModel
+    public class Student : BaseModel
     {
         public string StudentId { get; set; }
 

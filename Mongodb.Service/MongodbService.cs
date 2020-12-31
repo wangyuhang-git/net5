@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,14 +25,17 @@ namespace Mongodb.Service
             collection = db.GetCollection<T>(tableName);
         }
 
-        public List<T> Get()
-        {
-            return collection.Find(t => true).ToList();
-        }
 
         public T Get(string id)
         {
             return collection.Find<T>(t => t.Id == id).FirstOrDefault();
+        }
+
+        public async Task<T> GetAsync(string id)
+        {
+            IAsyncCursor<T> asyncCursor = await collection.FindAsync(t => t.Id == id);
+            List<T> list = await asyncCursor.ToListAsync();
+            return list.FirstOrDefault();
         }
 
         public T Add(T t)
@@ -40,9 +44,20 @@ namespace Mongodb.Service
             return t;
         }
 
+        public async Task<T> AddAsync(T t)
+        {
+            await collection.InsertOneAsync(t);
+            return t;
+        }
+
         public void AddMany(List<T> list)
         {
             collection.InsertMany(list);
+        }
+
+        public async void AddManyAsync(List<T> list)
+        {
+            await collection.InsertManyAsync(list);
         }
 
         public void Update(string id, T tin)
@@ -50,12 +65,31 @@ namespace Mongodb.Service
             collection.ReplaceOne(t => t.Id == id, tin);
         }
 
+        public async void UpdataAsync(string id, T tin)
+        {
+            await collection.ReplaceOneAsync(t => t.Id == id, tin);
+        }
+
         public void Remove(string id)
         {
             collection.DeleteOne(t => t.Id == id);
         }
 
-        public async Task<List<T>> GetAsync()
+        public async void RemoveAsync(string id)
+        {
+            await collection.DeleteOneAsync(t => t.Id == id);
+        }
+
+        public List<T> GetAllList()
+        {
+            var filters = new List<FilterDefinition<T>>();
+            filters.Add(Builders<T>.Filter.Empty);
+            var filter = Builders<T>.Filter.And(filters);
+            var fullCollection = collection.Find(filter);
+            return fullCollection.ToList();
+        }
+
+        public async Task<List<T>> GetAllListAsync()
         {
             var filters = new List<FilterDefinition<T>>();
 
@@ -63,6 +97,11 @@ namespace Mongodb.Service
             var filter = Builders<T>.Filter.And(filters);
             var fullCollection = await collection.FindAsync(filter);
             return await fullCollection.ToListAsync();
+        }
+
+        public List<T> GetList(Expression<Func<T, bool>> expression)
+        {
+            return collection.Find(expression).ToList();
         }
 
         public async Task<List<T>> GetListAsync(Expression<Func<T, bool>> expression)

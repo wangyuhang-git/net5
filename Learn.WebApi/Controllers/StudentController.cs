@@ -20,6 +20,7 @@ namespace Learn.WebApi.Controllers
     [Route("api/Student")]
     public class StudentController : ControllerBase
     {
+        ISutdent studentBusiness = new StudentBusiness();
         private static List<Student> Students = new List<Student>() {
             new Student(){ StudentId= Guid.NewGuid().ToString(), FirstName="Wang", LastName="Yuhang" , Birthday=Convert.ToDateTime("1989-10-28")},
             new Student(){ StudentId= Guid.NewGuid().ToString(), FirstName="Chen", LastName="Qiujin" , Birthday=Convert.ToDateTime("1989-09-03")},
@@ -113,14 +114,29 @@ namespace Learn.WebApi.Controllers
             return Ok(list);
         }
 
-        [HttpGet("GetStudentsAsync/{name?}")]
-        public async Task<IEnumerable<Learn.Models.Entity.Student>> GetStudentsAsync(string name = "")
+        [HttpGet("GetStudentsAsync")]
+        public async Task<IEnumerable<Learn.Models.Entity.Student>> GetStudentsAsync([FromBody] dynamic studentSearch)
         {
             //MongodbService<Learn.Models.Entity.Student, StudentSearch> service = new MongodbService<Learn.Models.Entity.Student, StudentSearch>("student");
             //return await service.GetListAsync(c => string.IsNullOrEmpty(name) || c.FirstName == name);
 
-            ISutdent studentBusiness = new StudentBusiness();
-            return await studentBusiness.GetStudentsAsync(name);
+            //Learn.Models.Business.StudentSearch search = new Learn.Models.Business.StudentSearch()
+            //{
+            //    Name = name,
+            //    Birthday = birthday
+            //};
+
+            JObject @object = JObject.Parse(studentSearch.ToString());
+            var search = @object.ToObject<StudentSearch>();
+            _logger.LogInformation(Newtonsoft.Json.JsonConvert.SerializeObject(search));
+
+            return await studentBusiness.GetStudentsAsync(search);
+        }
+
+        [HttpGet("GetStudents/{name?}")]
+        public IEnumerable<Learn.Models.Entity.Student> GetStudents(string name = "")
+        {
+            return studentBusiness.GetStudents(new StudentSearch() { Name = name }); ;
         }
     }
 }
