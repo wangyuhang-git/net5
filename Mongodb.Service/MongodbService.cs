@@ -65,7 +65,7 @@ namespace Mongodb.Service
             collection.ReplaceOne(t => t.Id == id, tin);
         }
 
-        public async void UpdataAsync(string id, T tin)
+        public async Task UpdataAsync(string id, T tin)
         {
             await collection.ReplaceOneAsync(t => t.Id == id, tin);
         }
@@ -75,7 +75,7 @@ namespace Mongodb.Service
             collection.DeleteOne(t => t.Id == id);
         }
 
-        public async void RemoveAsync(string id)
+        public async Task RemoveAsync(string id)
         {
             await collection.DeleteOneAsync(t => t.Id == id);
         }
