@@ -1,4 +1,6 @@
 using AutoMapper;
+using Learn.Business.Student;
+using Learn.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -41,6 +43,15 @@ namespace Learn.WebApi
             //services.AddSession();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            //×¢²áË²Ê±·þÎñ
+            services.AddTransient<IStudent, StudentBusiness>();
+
+            //services.AddTransient<IStudent>(serviceProvider =>
+            //{
+            //    Console.WriteLine(serviceProvider.GetService(typeof(StudentBusiness)));
+            //    return new StudentBusiness();
+            //});
 
         }
 

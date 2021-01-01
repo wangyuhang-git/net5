@@ -50,12 +50,12 @@ namespace Mongodb.Service
             return t;
         }
 
-        public void AddMany(List<T> list)
+        public void AddMany(IEnumerable<T> list)
         {
             collection.InsertMany(list);
         }
 
-        public async void AddManyAsync(List<T> list)
+        public async Task AddManyAsync(IEnumerable<T> list)
         {
             await collection.InsertManyAsync(list);
         }

@@ -20,7 +20,7 @@ namespace Learn.WebApi.Controllers
     [Route("api/Student")]
     public class StudentController : ControllerBase
     {
-        ISutdent studentBusiness = new StudentBusiness();
+        //IStudent studentBusiness = new StudentBusiness();
         private static List<Student> Students = new List<Student>() {
             new Student(){ StudentId= Guid.NewGuid().ToString(), FirstName="Wang", LastName="Yuhang" , Birthday=Convert.ToDateTime("1989-10-28")},
             new Student(){ StudentId= Guid.NewGuid().ToString(), FirstName="Chen", LastName="Qiujin" , Birthday=Convert.ToDateTime("1989-09-03")},
@@ -29,10 +29,13 @@ namespace Learn.WebApi.Controllers
 
         private readonly ILogger<StudentController> _logger;
         private readonly IMapper _mapper;
-        public StudentController(ILogger<StudentController> Logger, IMapper Mapper)
+        private readonly IStudent _student;
+
+        public StudentController(ILogger<StudentController> Logger, IMapper Mapper, IStudent Student)
         {
             this._logger = Logger;
             this._mapper = Mapper;
+            this._student = Student;
         }
 
         [HttpGet]
@@ -93,6 +96,15 @@ namespace Learn.WebApi.Controllers
             return Ok();
         }
 
+        [HttpPost("AddManyAsync")]
+        public async Task AddManyAsync([FromBody] dynamic values)
+        {
+            JObject @object = JObject.Parse(values.ToString());
+            StudentList students = @object.ToObject<StudentList>();
+            Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(students));
+            await _student.AddManyAsync(students.Students);
+        }
+
         [HttpGet("GetStudent/{guid?}")]
         public IActionResult GetStudent(string guid = "")
         {
@@ -130,13 +142,14 @@ namespace Learn.WebApi.Controllers
             var search = @object.ToObject<StudentSearch>();
             _logger.LogInformation(Newtonsoft.Json.JsonConvert.SerializeObject(search));
 
-            return await studentBusiness.GetStudentsAsync(search);
+            return await _student.GetStudentsAsync(search);
         }
 
         [HttpGet("GetStudents/{name?}")]
-        public IEnumerable<Learn.Models.Entity.Student> GetStudents(string name = "")
+        public IEnumerable<Learn.Models.Entity.Student> GetStudents([FromServices] IStudent student, string name = "")
         {
-            return studentBusiness.GetStudents(new StudentSearch() { Name = name }); ;
+            //return _student.GetStudents(new StudentSearch() { Name = name }); 
+            return student.GetStudents(new StudentSearch() { Name = name });
         }
     }
 }

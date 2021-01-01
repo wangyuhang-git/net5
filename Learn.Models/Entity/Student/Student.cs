@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Learn.Models.Entity
 {
+    [Serializable]
     public class Student : BaseModel
     {
         public string StudentId { get; set; }

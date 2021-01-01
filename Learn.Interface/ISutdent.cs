@@ -7,17 +7,26 @@ using System.Threading.Tasks;
 
 namespace Learn.Interface
 {
-    public interface ISutdent
+    public interface IStudent
     {
+        /// <summary>
+        /// 获取列表[同步]
+        /// </summary>
+        /// <param name="studentSearch"></param>
+        /// <returns></returns>
         IEnumerable<Student> GetStudents(StudentSearch studentSearch);
 
         /// <summary>
-        /// 获取列表
+        /// 获取列表[异步]
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         Task<IEnumerable<Student>> GetStudentsAsync(StudentSearch studentSearch);
 
+
+        void AddMany(IEnumerable<Student> students);
+
+        Task AddManyAsync(IEnumerable<Student> students);
 
     }
 }
