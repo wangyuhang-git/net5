@@ -1,3 +1,4 @@
+using Autofac;
 using AutoMapper;
 using Learn.Business.Student;
 using Learn.Interface;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -29,7 +31,6 @@ namespace Learn.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
@@ -45,13 +46,21 @@ namespace Learn.WebApi
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             //×¢²áË²Ê±·þÎñ
-            services.AddTransient<IStudent, StudentBusiness>();
+            //services.AddTransient<IStudent, StudentBusiness>();
+            services.AddTransient<IStudent, StudentBusinessEx>();
+
+            services.Replace(ServiceDescriptor.Singleton<IStudent, StudentBusiness>());
 
             //services.AddTransient<IStudent>(serviceProvider =>
             //{
             //    Console.WriteLine(serviceProvider.GetService(typeof(StudentBusiness)));
             //    return new StudentBusiness();
             //});
+
+        }
+
+        public void ConfigureContainer(ContainerBuilder builer)
+        {
 
         }
 
