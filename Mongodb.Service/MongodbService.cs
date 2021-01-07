@@ -113,6 +113,34 @@ namespace Mongodb.Service
             return await fullCollectioin.ToListAsync();
         }
 
+        public async Task<List<T>> GetPageListAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Expression<Func<T, bool>> expression)
+        {
+            var filters = new List<FilterDefinition<T>>();
+            filters.Add(GetAction(expression));
+            FilterDefinition<T> filter = Builders<T>.Filter.And(filters);
+
+            var sort = Builders<T>.Sort;
+            SortDefinition<T> sortDefinition = null;
+            foreach (var item in sortDic)
+            {
+                if (item.Value == "d")
+                {
+                    sortDefinition = sort.Descending(item.Key);
+                }
+                else
+                {
+                    sortDefinition = sort.Ascending(item.Key);
+                }
+            }
+            FindOptions<T, T> findOptions = new FindOptions<T, T>();
+            findOptions.Limit = pageSize;
+            findOptions.Skip = (pageIndex - 1) * pageSize;
+            findOptions.Sort = sortDefinition;
+            //Pageable pageable = PageRequest.of(pageNUmber, pageSize);
+            var fullCollectioin = await collection.FindAsync(filter, findOptions);
+            return await fullCollectioin.ToListAsync();
+        }
+
         public FilterDefinition<T> GetAction(Expression<Func<T, bool>> expression)
         {
             if (null == expression)

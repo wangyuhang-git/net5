@@ -27,11 +27,28 @@ namespace Learn.Business.Student
             //Expression<Func<Models.Entity.Student, bool>> expression = c =>
             //     string.IsNullOrEmpty(search.Name)
             //     || c.FirstName == search.Name;
-            Models.Entity.Student student = new Models.Entity.Student();
-            where.Equal("FirstName", search.Name, "and");
-            where.LessThanOrEqual(nameof(student.Birthday), search.Birthday, "and");
-            where.GetExpression();
-            return await service.GetListAsync(where.GetExpression());
+            Expression<Func<Models.Entity.Student, bool>> expression = null;
+            if (null != search)
+            {
+                Models.Entity.Student student = new Models.Entity.Student();
+                where.Equal("FirstName", search.Name, "and");
+                where.LessThanOrEqual(nameof(student.Birthday), search.Birthday, "and");
+                expression = where.GetExpression();
+            }
+            return await service.GetListAsync(expression);
+        }
+
+        public async Task<IEnumerable<Models.Entity.Student>> GetPageStudentsAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, StudentSearch search)
+        {
+            Expression<Func<Models.Entity.Student, bool>> expression = null;
+            if (null != search)
+            {
+                Models.Entity.Student student = new Models.Entity.Student();
+                where.Equal("FirstName", search.Name, "and");
+                where.LessThanOrEqual(nameof(student.Birthday), search.Birthday, "and");
+                expression = where.GetExpression();
+            }
+            return await service.GetPageListAsync(pageIndex, pageSize, sortDic, expression);
         }
 
         public void AddMany(IEnumerable<Learn.Models.Entity.Student> students)

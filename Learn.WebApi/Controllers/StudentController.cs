@@ -145,6 +145,17 @@ namespace Learn.WebApi.Controllers
             return await _student.GetStudentsAsync(search);
         }
 
+        [HttpPost("GetPageStudentsAsync")]
+        public async Task<IEnumerable<Learn.Models.Entity.Student>> GetPageStudentsAsync([FromBody] dynamic studentSearch)
+        {
+            JObject @pageObject = JObject.Parse(studentSearch.ToString());
+            var pageSearch = @pageObject.ToObject<StudentPageSearch>();
+            _logger.LogInformation(Newtonsoft.Json.JsonConvert.SerializeObject(pageSearch.StudentSearch));
+            //Dictionary<string, string> sortDic = studentSearch.SortDic;
+            Dictionary<string, string> sortDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(pageSearch.SortDic.ToString());
+            return await _student.GetPageStudentsAsync(pageSearch.PageIndex, pageSearch.PageSize,sortDic, pageSearch.StudentSearch);
+        }
+
         [HttpGet("GetStudents/{name?}")]
         public IEnumerable<Learn.Models.Entity.Student> GetStudents([FromServices] IStudent student, string name = "")
         {

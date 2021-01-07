@@ -23,6 +23,7 @@ namespace Learn.Interface
         /// <returns></returns>
         Task<IEnumerable<Student>> GetStudentsAsync(StudentSearch studentSearch);
 
+        Task<IEnumerable<Student>> GetPageStudentsAsync(int pageIndex,int pageSize,Dictionary<string,string> sortDic, StudentSearch studentSearch);
 
         void AddMany(IEnumerable<Student> students);
 

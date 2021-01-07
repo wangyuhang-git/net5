@@ -28,5 +28,9 @@ namespace Learn.Business.Student
         {
             throw new NotImplementedException();
         }
+        public Task<IEnumerable<Models.Entity.Student>> GetPageStudentsAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, StudentSearch search)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
