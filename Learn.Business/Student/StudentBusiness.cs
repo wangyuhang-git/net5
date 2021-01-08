@@ -13,7 +13,7 @@ namespace Learn.Business.Student
 {
     public class StudentBusiness : IStudent
     {
-        MongodbService<Learn.Models.Entity.Student, StudentSearch> service = new MongodbService<Learn.Models.Entity.Student, StudentSearch>("student");
+        MongodbService<Learn.Models.Entity.Student> service = new MongodbService<Learn.Models.Entity.Student>("student");
 
         WhereHelper<Models.Entity.Student> where = new WhereHelper<Models.Entity.Student>();
 

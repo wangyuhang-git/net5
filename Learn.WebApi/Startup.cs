@@ -1,5 +1,6 @@
 using Autofac;
 using AutoMapper;
+using Learn.Business.ManagePositionAtt;
 using Learn.Business.Student;
 using Learn.Interface;
 using Microsoft.AspNetCore.Builder;
@@ -48,8 +49,14 @@ namespace Learn.WebApi
             //注册瞬时服务
             //services.AddTransient<IStudent, StudentBusiness>();
             services.AddTransient<IStudent, StudentBusinessEx>();
-
             services.Replace(ServiceDescriptor.Singleton<IStudent, StudentBusiness>());
+
+            //注册管理岗位人员考勤服务[工程模式]
+            services.AddTransient<IManagePostHistoryAtt>(serviceProvider =>
+            {
+                //serviceProvider.GetService(typeof(ManagePostHistoryAttBusiness));
+                return new ManagePostHistoryAttBusiness();
+            });
 
             //services.AddTransient<IStudent>(serviceProvider =>
             //{

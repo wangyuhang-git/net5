@@ -5,8 +5,7 @@ using System.Text;
 
 namespace Learn.Models.Business
 {
-    public class StudentPageSearch : BasePageModel
+    public class ManagePostAttPageSearch : BasePageModel
     {
-        public StudentSearch StudentSearch { get; set; }
     }
 }

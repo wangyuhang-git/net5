@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace Mongodb.Service
 {
-    public class MongodbService<T, S>
+    public class MongodbService<T>
         where T : BaseModel
-        where S : BaseSearchModel
+        //where S : BaseSearchModel
 
     {
         protected readonly IMongoCollection<T> collection;
@@ -123,13 +123,27 @@ namespace Mongodb.Service
             SortDefinition<T> sortDefinition = null;
             foreach (var item in sortDic)
             {
-                if (item.Value == "d")
+                if (null == sortDefinition)
                 {
-                    sortDefinition = sort.Descending(item.Key);
+                    if (item.Value == "d")
+                    {
+                        sortDefinition = sort.Descending(item.Key);
+                    }
+                    else
+                    {
+                        sortDefinition = sort.Ascending(item.Key);
+                    }
                 }
                 else
                 {
-                    sortDefinition = sort.Ascending(item.Key);
+                    if (item.Value == "d")
+                    {
+                        sortDefinition.Descending(item.Key);
+                    }
+                    else
+                    {
+                        sortDefinition.Ascending(item.Key);
+                    }
                 }
             }
             FindOptions<T, T> findOptions = new FindOptions<T, T>();

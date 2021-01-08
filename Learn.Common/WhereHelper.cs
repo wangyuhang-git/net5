@@ -123,5 +123,111 @@ namespace Learn.Common
             else
                 filter = Expression.Or(filter, result);
         }
+        /// <summary>
+        /// 根据字典值获取查询条件
+        /// </summary>
+        /// <param name="searchDic"></param>
+        /// <returns></returns>
+        public Expression<Func<T, bool>> GetExpression(Dictionary<string, string> searchDic)
+        {
+            Expression<Func<T, bool>> expression = null;
+            if (null != searchDic)
+            {
+                foreach (var item in searchDic)
+                {
+                    string parmeName = string.Empty; //要查询的字段
+                    string parmeValue = item.Value;//要查询的值
+                    if (!string.IsNullOrEmpty(item.Value))
+                    {
+                        if (item.Key.StartsWith("s_0_"))//模糊查询
+                        {
+                            parmeName = item.Key.Replace("s_0_", "");//获取字段名字
+                            string[] parmeArr = parmeName.Split(new char[] { '|' });//多个字段模糊查询 用 or
+                            foreach (string str in parmeArr)
+                            {
+                                this.Contains(nameof(str), item.Value, "or");
+                            }
+                        }
+                        else if (item.Key.StartsWith("s_1_"))//精确查询
+                        {
+                            parmeName = item.Key.Replace("s_1_", "");//获取字段名字
+                            this.Equal(nameof(parmeName), item.Value, "and");
+                        }
+                        else if (item.Key.StartsWith("s_3_"))//时间段查询
+                        {
+                            parmeName = item.Key.Replace("s_1_", "");//获取字段名字
+                            string[] valueArr = item.Value.Split(new char[] { ',' });
+                            if (valueArr.Length == 2)
+                            {
+                                DateTime dateTime;
+                                if (!string.IsNullOrEmpty(valueArr[0]))
+                                {
+                                    if (DateTime.TryParse(valueArr[0], out dateTime))
+                                    {
+                                        this.GreaterThanOrEqual(nameof(parmeName), dateTime, "and");
+                                    }
+                                    else
+                                    {
+                                        throw new ArgumentException("根据时间段查询条件的开始日期格式不正确！");
+                                    }
+                                }
+                                if (!string.IsNullOrEmpty(valueArr[1]))
+                                {
+                                    if (DateTime.TryParse(valueArr[1], out dateTime))
+                                    {
+                                        this.LessThanOrEqual(nameof(parmeName), dateTime, "and");
+                                    }
+                                    else
+                                    {
+                                        throw new ArgumentException("根据时间段查询条件的结束日期格式不正确！");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                throw new ArgumentNullException("根据时间段查询条件的格式不正确！");
+                            }
+                        }
+                        else if (item.Key.StartsWith("s_4_"))//数字段查询
+                        {
+                            parmeName = item.Key.Replace("s_4_", "");//获取字段名字
+                            string[] valueArr = item.Value.Split(new char[] { ',' });
+                            if (valueArr.Length == 2)
+                            {
+                                double _double;
+                                if (!string.IsNullOrEmpty(valueArr[0]))
+                                {
+                                    if (Double.TryParse(valueArr[0], out _double))
+                                    {
+                                        this.GreaterThanOrEqual(nameof(parmeName), _double, "and");
+                                    }
+                                    else
+                                    {
+                                        throw new ArgumentException("根据数字段查询条件的开始数字格式不正确！");
+                                    }
+                                }
+                                if (!string.IsNullOrEmpty(valueArr[1]))
+                                {
+                                    if (Double.TryParse(valueArr[1], out _double))
+                                    {
+                                        this.LessThanOrEqual(nameof(parmeName), _double, "and");
+                                    }
+                                    else
+                                    {
+                                        throw new ArgumentException("根据数字段查询条件的结束数字格式不正确！");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                throw new ArgumentNullException("根据数字段查询条件的格式不正确！");
+                            }
+                        }
+                    }
+                }
+                expression = this.GetExpression();
+            }
+            return expression;
+        }
     }
 }

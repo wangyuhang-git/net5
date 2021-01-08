@@ -90,7 +90,7 @@ namespace Learn.WebApi.Controllers
             JObject @object = JObject.Parse(value.ToString());
             StudentList students = @object.ToObject<StudentList>();
 
-            MongodbService<Learn.Models.Entity.Student, StudentSearch> mongodbService = new MongodbService<Learn.Models.Entity.Student, StudentSearch>("student");
+            MongodbService<Learn.Models.Entity.Student> mongodbService = new MongodbService<Learn.Models.Entity.Student>("student");
             mongodbService.AddMany(students.Students);
             _logger.LogInformation($"增加了{students.Students.Count}条记录");
             return Ok();
@@ -153,7 +153,7 @@ namespace Learn.WebApi.Controllers
             _logger.LogInformation(Newtonsoft.Json.JsonConvert.SerializeObject(pageSearch.StudentSearch));
             //Dictionary<string, string> sortDic = studentSearch.SortDic;
             Dictionary<string, string> sortDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(pageSearch.SortDic.ToString());
-            return await _student.GetPageStudentsAsync(pageSearch.PageIndex, pageSearch.PageSize,sortDic, pageSearch.StudentSearch);
+            return await _student.GetPageStudentsAsync(pageSearch.PageIndex, pageSearch.PageSize, sortDic, pageSearch.StudentSearch);
         }
 
         [HttpGet("GetStudents/{name?}")]

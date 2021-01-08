@@ -21,7 +21,7 @@ namespace Learn.WebApi
             builder.AddCustomConfiguration();
 
             var configRoot = builder.Build();
-            Console.WriteLine($"lastTime:{configRoot["lastTime"]}");
+            //Console.WriteLine($"lastTime:{configRoot["lastTime"]}");
             CreateHostBuilder(args).Build().Run();
         }
 
