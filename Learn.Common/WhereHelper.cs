@@ -56,7 +56,10 @@ namespace Learn.Common
         {
             Expression left = Expression.Property(param, typeof(T).GetProperty(propertyName));
             Expression right = Expression.Constant(value, value.GetType());
-            Expression result = Expression.Call(left, typeof(string).GetMethod("Contains"), right);
+            //mondigy on 20210109
+            //Expression result = Expression.Call(left, typeof(string).GetMethod("Contains"), right);
+            //由于netcore中string有多个Contains方法重载，故直接用上面一行代码会报错
+            Expression result = Expression.Call(left, typeof(string).GetMethod("Contains", new[] { typeof(string) }), right);
             if (type.ToLower() == "and")
                 filter = Expression.And(filter, result);
             else
@@ -143,15 +146,23 @@ namespace Learn.Common
                         {
                             parmeName = item.Key.Replace("s_0_", "");//获取字段名字
                             string[] parmeArr = parmeName.Split(new char[] { '|' });//多个字段模糊查询 用 or
-                            foreach (string str in parmeArr)
+                            if (parmeArr.Length > 0)
                             {
-                                this.Contains(nameof(str), item.Value, "or");
+                                int _i = 0;
+                                foreach (string str in parmeArr)
+                                {
+                                    if (_i == 0)
+                                        this.Contains(str, item.Value, "and");
+                                    else
+                                        this.Contains(str, item.Value, "or");
+                                    _i++;
+                                }
                             }
                         }
                         else if (item.Key.StartsWith("s_1_"))//精确查询
                         {
                             parmeName = item.Key.Replace("s_1_", "");//获取字段名字
-                            this.Equal(nameof(parmeName), item.Value, "and");
+                            this.Equal(parmeName, item.Value, "and");
                         }
                         else if (item.Key.StartsWith("s_3_"))//时间段查询
                         {
@@ -164,7 +175,7 @@ namespace Learn.Common
                                 {
                                     if (DateTime.TryParse(valueArr[0], out dateTime))
                                     {
-                                        this.GreaterThanOrEqual(nameof(parmeName), dateTime, "and");
+                                        this.GreaterThanOrEqual(parmeName, dateTime, "and");
                                     }
                                     else
                                     {
@@ -175,7 +186,7 @@ namespace Learn.Common
                                 {
                                     if (DateTime.TryParse(valueArr[1], out dateTime))
                                     {
-                                        this.LessThanOrEqual(nameof(parmeName), dateTime, "and");
+                                        this.LessThanOrEqual(parmeName, dateTime, "and");
                                     }
                                     else
                                     {
@@ -199,7 +210,7 @@ namespace Learn.Common
                                 {
                                     if (Double.TryParse(valueArr[0], out _double))
                                     {
-                                        this.GreaterThanOrEqual(nameof(parmeName), _double, "and");
+                                        this.GreaterThanOrEqual(parmeName, _double, "and");
                                     }
                                     else
                                     {
@@ -210,7 +221,7 @@ namespace Learn.Common
                                 {
                                     if (Double.TryParse(valueArr[1], out _double))
                                     {
-                                        this.LessThanOrEqual(nameof(parmeName), _double, "and");
+                                        this.LessThanOrEqual(parmeName, _double, "and");
                                     }
                                     else
                                     {

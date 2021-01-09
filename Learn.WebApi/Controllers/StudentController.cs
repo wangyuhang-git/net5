@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Learn.Business.Student;
 using Learn.Interface;
-using Learn.Models;
 using Learn.Models.Business;
 using Learn.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;

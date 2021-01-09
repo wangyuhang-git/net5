@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Learn.Models.Common
 {
-    public class BasePageModel : BaseModel
+    public class BasePageModel //: BaseModel
     {
         /// <summary>
         /// 页码

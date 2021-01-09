@@ -138,11 +138,11 @@ namespace Mongodb.Service
                 {
                     if (item.Value == "d")
                     {
-                        sortDefinition.Descending(item.Key);
+                        sortDefinition = sortDefinition.Descending(item.Key);
                     }
                     else
                     {
-                        sortDefinition.Ascending(item.Key);
+                        sortDefinition = sortDefinition.Ascending(item.Key);
                     }
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using Learn.Models.Common;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -42,6 +43,7 @@ namespace Learn.Models.Entity
         /// <summary>
         /// 考勤时间
         /// </summary>
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime AttendanceTime { get; set; }
         /// <summary>
         /// 考勤图片

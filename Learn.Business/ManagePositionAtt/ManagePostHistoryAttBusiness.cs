@@ -33,7 +33,7 @@ namespace Learn.Business.ManagePositionAtt
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <param name="sortDic"></param>
-        /// <param name="expression"></param>
+        /// <param name="searchDic"></param>
         /// <returns></returns>
         public async Task<IEnumerable<ManagePostHistoryAtt>> GetPageManagePostAtt(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Dictionary<string, string> searchDic)
         {

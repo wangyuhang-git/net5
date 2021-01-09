@@ -12,13 +12,15 @@ namespace Learn.Models.Common
         public string Id { get; set; }
 
         [BsonElement(nameof(CreateTime))]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime CreateTime { get; set; }
 
         public bool IsDelete { get; set; }
 
-        public BaseModel() {
+        public BaseModel()
+        {
             this.CreateTime = DateTime.Now;
             this.IsDelete = false;
-        }   
+        }
     }
 }

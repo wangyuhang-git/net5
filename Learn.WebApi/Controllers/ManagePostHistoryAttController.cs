@@ -1,13 +1,11 @@
 ﻿using Learn.Interface;
 using Learn.Models.Business;
 using Learn.Models.Entity;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learn.WebApi.Controllers

@@ -1,4 +1,5 @@
 ﻿using Learn.Models.Common;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +19,8 @@ namespace Learn.Models.Entity
         /// <summary>
         /// 数据交换时间
         /// </summary>
-        public DateTime StatusTime { get; set; }
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
+        public DateTime? StatusTime { get; set; }
         /// <summary>
         /// 是否满足考勤规则
         /// </summary>
