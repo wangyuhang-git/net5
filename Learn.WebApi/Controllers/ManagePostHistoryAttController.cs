@@ -1,5 +1,6 @@
 ﻿using Learn.Interface;
 using Learn.Models.Business;
+using Learn.Models.Common;
 using Learn.Models.Entity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -44,7 +45,7 @@ namespace Learn.WebApi.Controllers
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost("GetPageListAsync")]
-        public async Task<IEnumerable<ManagePostHistoryAtt>> GetPageListAsync([FromBody] dynamic value)
+        public async Task<BaseResultModel<ManagePostHistoryAtt>> GetPageListAsync([FromBody] dynamic value)
         {
             JObject @object = JObject.Parse(value.ToString());
             ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();

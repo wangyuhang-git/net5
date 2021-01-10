@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Learn.Models.Entity;
+using Learn.Models.Common;
 
 namespace Learn.Business.Student
 {
@@ -38,7 +39,7 @@ namespace Learn.Business.Student
             return await service.GetListAsync(expression);
         }
 
-        public async Task<IEnumerable<Models.Entity.Student>> GetPageStudentsAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, StudentSearch search)
+        public async Task<BaseResultModel<Models.Entity.Student>> GetPageStudentsAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, StudentSearch search)
         {
             Expression<Func<Models.Entity.Student, bool>> expression = null;
             if (null != search)

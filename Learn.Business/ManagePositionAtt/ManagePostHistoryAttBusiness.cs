@@ -1,6 +1,7 @@
 ﻿using Learn.Common;
 using Learn.Interface;
 using Learn.Models.Business;
+using Learn.Models.Common;
 using Learn.Models.Entity;
 using Mongodb.Service;
 using System;
@@ -35,7 +36,7 @@ namespace Learn.Business.ManagePositionAtt
         /// <param name="sortDic"></param>
         /// <param name="searchDic"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<ManagePostHistoryAtt>> GetPageManagePostAtt(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Dictionary<string, string> searchDic)
+        public async Task<BaseResultModel<ManagePostHistoryAtt>> GetPageManagePostAtt(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Dictionary<string, string> searchDic)
         {
             Expression<Func<ManagePostHistoryAtt, bool>> expression = whereHelper.GetExpression(searchDic);
             return await service.GetPageListAsync(pageIndex, pageSize, sortDic, expression);
@@ -45,7 +46,7 @@ namespace Learn.Business.ManagePositionAtt
         /// </summary>
         /// <param name="search"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<ManagePostHistoryAtt>> GetPageManagePostAtt(ManagePostAttPageSearch search)
+        public async Task<BaseResultModel<ManagePostHistoryAtt>> GetPageManagePostAtt(ManagePostAttPageSearch search)
         {
             Dictionary<string, string> sortDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(search.SortDic.ToString());
             Dictionary<string, string> searchDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(search.SearchDic.ToString());

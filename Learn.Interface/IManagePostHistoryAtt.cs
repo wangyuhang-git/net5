@@ -1,4 +1,5 @@
 ﻿using Learn.Models.Business;
+using Learn.Models.Common;
 using Learn.Models.Entity;
 using System;
 using System.Collections.Generic;
@@ -26,12 +27,12 @@ namespace Learn.Interface
         /// <param name="sortDic">排序字典值</param>
         /// <param name="searchDic">查询条件字典值</param>
         /// <returns></returns>
-        Task<IEnumerable<ManagePostHistoryAtt>> GetPageManagePostAtt(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Dictionary<string, string> searchDic);
+        Task<BaseResultModel<ManagePostHistoryAtt>> GetPageManagePostAtt(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Dictionary<string, string> searchDic);
         /// <summary>
         /// 分页查询列表[异步]
         /// </summary>
         /// <param name="search"></param>
         /// <returns></returns>
-        Task<IEnumerable<ManagePostHistoryAtt>> GetPageManagePostAtt(ManagePostAttPageSearch search);
+        Task<BaseResultModel<ManagePostHistoryAtt>> GetPageManagePostAtt(ManagePostAttPageSearch search);
     }
 }

@@ -17,6 +17,10 @@ namespace Learn.Models.Entity
         /// </summary>
         public string AttendanceId { get; set; }
         /// <summary>
+        /// 人员ID
+        /// </summary>
+        public string PersonGUID { get; set; }
+        /// <summary>
         /// 姓名
         /// </summary>
         public string PersonName { get; set; }
@@ -33,9 +37,25 @@ namespace Learn.Models.Entity
         /// </summary>
         public string ProjectName { get; set; }
         /// <summary>
+        /// 施工许可证号码
+        /// </summary>
+        public string ConstructPermitNum { get; set; }
+        /// <summary>
+        /// 项目ID
+        /// </summary>
+        public string ProjectGuid { get; set; }
+        /// <summary>
         /// 单位名称
         /// </summary>
         public string Company { get; set; }
+        /// <summary>
+        /// 单位统一社会信用代码
+        /// </summary>
+        public string OrganizationCode { get; set; }
+        /// <summary>
+        /// 单位类型
+        /// </summary>
+        public string CorpType { get; set; }
         /// <summary>
         /// 所属区域
         /// </summary>

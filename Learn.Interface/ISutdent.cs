@@ -1,4 +1,5 @@
 ﻿using Learn.Models.Business;
+using Learn.Models.Common;
 using Learn.Models.Entity;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace Learn.Interface
         /// <returns></returns>
         Task<IEnumerable<Student>> GetStudentsAsync(StudentSearch studentSearch);
 
-        Task<IEnumerable<Student>> GetPageStudentsAsync(int pageIndex,int pageSize,Dictionary<string,string> sortDic, StudentSearch studentSearch);
+        Task<BaseResultModel<Student>> GetPageStudentsAsync(int pageIndex,int pageSize,Dictionary<string,string> sortDic, StudentSearch studentSearch);
 
         void AddMany(IEnumerable<Student> students);
 

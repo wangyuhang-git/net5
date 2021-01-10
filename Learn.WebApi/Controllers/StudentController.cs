@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Learn.Interface;
 using Learn.Models.Business;
+using Learn.Models.Common;
 using Learn.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -144,7 +145,7 @@ namespace Learn.WebApi.Controllers
         }
 
         [HttpPost("GetPageStudentsAsync")]
-        public async Task<IEnumerable<Learn.Models.Entity.Student>> GetPageStudentsAsync([FromBody] dynamic studentSearch)
+        public async Task<BaseResultModel<Learn.Models.Entity.Student>> GetPageStudentsAsync([FromBody] dynamic studentSearch)
         {
             JObject @pageObject = JObject.Parse(studentSearch.ToString());
             var pageSearch = @pageObject.ToObject<StudentPageSearch>();

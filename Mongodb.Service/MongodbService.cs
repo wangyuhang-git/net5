@@ -80,6 +80,16 @@ namespace Mongodb.Service
             await collection.DeleteOneAsync(t => t.Id == id);
         }
 
+        public long GetCount(Expression<Func<T, bool>> expression)
+        {
+            return collection.CountDocuments(expression);
+        }
+
+        public async Task<long> GetCountAsync(Expression<Func<T, bool>> expression)
+        {
+            return await collection.CountDocumentsAsync(expression);
+        }
+
         public List<T> GetAllList()
         {
             var filters = new List<FilterDefinition<T>>();
@@ -113,46 +123,60 @@ namespace Mongodb.Service
             return await fullCollectioin.ToListAsync();
         }
 
-        public async Task<List<T>> GetPageListAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Expression<Func<T, bool>> expression)
+        public async Task<BaseResultModel<T>> GetPageListAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Expression<Func<T, bool>> expression)
         {
-            var filters = new List<FilterDefinition<T>>();
-            filters.Add(GetAction(expression));
-            FilterDefinition<T> filter = Builders<T>.Filter.And(filters);
-
-            var sort = Builders<T>.Sort;
-            SortDefinition<T> sortDefinition = null;
-            foreach (var item in sortDic)
+            BaseResultModel<T> baseResultModel = new BaseResultModel<T>();
+            string msg = string.Empty;
+            try
             {
-                if (null == sortDefinition)
+                var filters = new List<FilterDefinition<T>>();
+                filters.Add(GetAction(expression));
+                FilterDefinition<T> filter = Builders<T>.Filter.And(filters);
+
+                baseResultModel.total = await collection.CountDocumentsAsync(filter);
+
+                var sort = Builders<T>.Sort;
+                SortDefinition<T> sortDefinition = null;
+                foreach (var item in sortDic)
                 {
-                    if (item.Value == "d")
+                    if (null == sortDefinition)
                     {
-                        sortDefinition = sort.Descending(item.Key);
+                        if (item.Value == "d")
+                        {
+                            sortDefinition = sort.Descending(item.Key);
+                        }
+                        else
+                        {
+                            sortDefinition = sort.Ascending(item.Key);
+                        }
                     }
                     else
                     {
-                        sortDefinition = sort.Ascending(item.Key);
+                        if (item.Value == "d")
+                        {
+                            sortDefinition = sortDefinition.Descending(item.Key);
+                        }
+                        else
+                        {
+                            sortDefinition = sortDefinition.Ascending(item.Key);
+                        }
                     }
                 }
-                else
-                {
-                    if (item.Value == "d")
-                    {
-                        sortDefinition = sortDefinition.Descending(item.Key);
-                    }
-                    else
-                    {
-                        sortDefinition = sortDefinition.Ascending(item.Key);
-                    }
-                }
+                FindOptions<T, T> findOptions = new FindOptions<T, T>();
+                findOptions.Limit = pageSize;
+                findOptions.Skip = (pageIndex - 1) * pageSize;
+                findOptions.Sort = sortDefinition;
+                //Pageable pageable = PageRequest.of(pageNUmber, pageSize);
+                var fullCollectioin = await collection.FindAsync(filter, findOptions);
+                baseResultModel.rows = await fullCollectioin.ToListAsync();
+                baseResultModel.success = true;
             }
-            FindOptions<T, T> findOptions = new FindOptions<T, T>();
-            findOptions.Limit = pageSize;
-            findOptions.Skip = (pageIndex - 1) * pageSize;
-            findOptions.Sort = sortDefinition;
-            //Pageable pageable = PageRequest.of(pageNUmber, pageSize);
-            var fullCollectioin = await collection.FindAsync(filter, findOptions);
-            return await fullCollectioin.ToListAsync();
+            catch (Exception ex)
+            {
+                baseResultModel.success = false;
+                baseResultModel.msg = ex.Message;
+            }
+            return baseResultModel;
         }
 
         public FilterDefinition<T> GetAction(Expression<Func<T, bool>> expression)

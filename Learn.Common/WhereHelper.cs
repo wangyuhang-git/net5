@@ -166,7 +166,7 @@ namespace Learn.Common
                         }
                         else if (item.Key.StartsWith("s_3_"))//时间段查询
                         {
-                            parmeName = item.Key.Replace("s_1_", "");//获取字段名字
+                            parmeName = item.Key.Replace("s_3_", "");//获取字段名字
                             string[] valueArr = item.Value.Split(new char[] { ',' });
                             if (valueArr.Length == 2)
                             {

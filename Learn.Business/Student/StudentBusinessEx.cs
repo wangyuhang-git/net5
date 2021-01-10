@@ -1,5 +1,6 @@
 ﻿using Learn.Interface;
 using Learn.Models.Business;
+using Learn.Models.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,7 +29,7 @@ namespace Learn.Business.Student
         {
             throw new NotImplementedException();
         }
-        public Task<IEnumerable<Models.Entity.Student>> GetPageStudentsAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, StudentSearch search)
+        public Task<BaseResultModel<Models.Entity.Student>> GetPageStudentsAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, StudentSearch search)
         {
             throw new NotImplementedException();
         }
