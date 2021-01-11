@@ -34,5 +34,12 @@ namespace Learn.Interface
         /// <param name="search"></param>
         /// <returns></returns>
         Task<BaseResultModel<ManagePostHistoryAtt>> GetPageManagePostAtt(ManagePostAttPageSearch search);
+
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <param name="search"></param>
+       /// <returns></returns>
+        Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search);
     }
 }

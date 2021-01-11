@@ -90,6 +90,29 @@ namespace Mongodb.Service
             return await collection.CountDocumentsAsync(expression);
         }
 
+        public async Task<List<string>> GetDistinctListAsync(Expression<Func<T, bool>> expression, string distinctField)
+        {
+            var filters = new List<FilterDefinition<T>>();
+            filters.Add(GetAction(expression));
+            FilterDefinition<T> filter = Builders<T>.Filter.And(filters);
+
+            FieldDefinition<T, string> field = distinctField;
+            var distinctList = await collection.DistinctAsync<string>(field, filter);
+            return await distinctList.ToListAsync();
+        }
+
+        /// <summary>
+        /// 根据指定字段获取不同数据的数量
+        /// </summary>
+        /// <param name="expression">过来条件</param>
+        /// <param name="distinctField">指定字段</param>
+        /// <returns></returns>
+        public async Task<int> GetDistinctCountAsync(Expression<Func<T, bool>> expression, string distinctField)
+        {
+            var distinctList = await this.GetDistinctListAsync(expression, distinctField);
+            return distinctList.Count;
+        }
+
         public List<T> GetAllList()
         {
             var filters = new List<FilterDefinition<T>>();

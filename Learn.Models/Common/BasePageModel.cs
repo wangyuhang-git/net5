@@ -22,6 +22,10 @@ namespace Learn.Models.Common
         /// 查询条件字典值
         /// </summary>
         public object SearchDic { get; set; }
+        /// <summary>
+        /// 去重的字段
+        /// </summary>
+        public string DistinctField { get; set; }
 
     }
 }

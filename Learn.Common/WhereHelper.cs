@@ -134,7 +134,7 @@ namespace Learn.Common
         public Expression<Func<T, bool>> GetExpression(Dictionary<string, string> searchDic)
         {
             Expression<Func<T, bool>> expression = null;
-            if (null != searchDic)
+            if (null != searchDic && searchDic.Count > 0)
             {
                 foreach (var item in searchDic)
                 {
@@ -238,6 +238,11 @@ namespace Learn.Common
                 }
                 expression = this.GetExpression();
             }
+            param = Expression.Parameter(typeof(T), "c");
+            //1==1
+            Expression left = Expression.Constant(1);
+            filter = Expression.Equal(left, left);
+
             return expression;
         }
     }

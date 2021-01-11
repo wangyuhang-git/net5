@@ -52,5 +52,13 @@ namespace Learn.WebApi.Controllers
             return await _ManagePostHistoryAtt.GetPageManagePostAtt(search);
         }
 
+        [HttpPost("GetStatisticsAsync")]
+        public async Task<ManagePostAttStatistics> GetManagePostStatisticsAsync([FromBody] dynamic value)
+        {
+            JObject @object = JObject.Parse(value.ToString());
+            ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
+            return await _ManagePostHistoryAtt.GetManagePostStatistics(search);
+        }
+
     }
 }
