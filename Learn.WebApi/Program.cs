@@ -21,11 +21,11 @@ namespace Learn.WebApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            //引入AutoFac服务    
-            .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                //引入AutoFac服务    
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory());
     }
 }

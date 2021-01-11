@@ -59,7 +59,10 @@ namespace Learn.WebApi
             //});
 
         }
-
+        /// <summary>
+        /// 此方法会被AutoFac调用
+        /// </summary>
+        /// <param name="builer"></param>
         public void ConfigureContainer(ContainerBuilder builer)
         {
 
