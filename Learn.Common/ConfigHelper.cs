@@ -22,6 +22,7 @@ namespace Learn.Common
                 int length = directory.IndexOf("/bin");
                 filePath = $"{directory.Substring(0, length)}{fileName}";
             }
+            //第三个参数为ture，允许配置文件热加载
             IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile(filePath, false, true);
 
             configuration = builder.Build();

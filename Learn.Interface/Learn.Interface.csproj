@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IManagePostAtt.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Learn.Models\Learn.Models.csproj" />
   </ItemGroup>
 

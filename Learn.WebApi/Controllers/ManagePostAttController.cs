@@ -1,30 +1,35 @@
-﻿using Learn.Interface;
+﻿using AutoMapper;
+using Learn.Interface;
 using Learn.Models.Business;
 using Learn.Models.Common;
 using Learn.Models.Entity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ManagePostHistoryAttController : ControllerBase
+    public class ManagePostAttController : ControllerBase
     {
-        private readonly IBaseManagePostAtt<ManagePostHistoryAtt, ManagePostAtt> _ManagePostHistoryAtt;
-        private readonly ILogger<ManagePostHistoryAttController> _Logger;
-        public ManagePostHistoryAttController(ILogger<ManagePostHistoryAttController> Logger, IBaseManagePostAtt<ManagePostHistoryAtt, ManagePostAtt> ManagePostHistoryAtt)
+        private readonly IBaseManagePostAtt<ManagePostAtt, ManagePostAtt> _ManagePostAtt;
+        private readonly ILogger<ManagePostAttController> _Logger;
+        private readonly IMapper _Mapper;
+        public ManagePostAttController(IMapper Mapper, ILogger<ManagePostAttController> Logger, IBaseManagePostAtt<ManagePostAtt, ManagePostAtt> ManagePostAtt)
         {
             this._Logger = Logger;
-            this._ManagePostHistoryAtt = ManagePostHistoryAtt;
+            this._ManagePostAtt = ManagePostAtt;
+            this._Mapper = Mapper;
         }
 
         /// <summary>
-        /// 批量新增管理岗位人员考勤数据[异步]
+        /// 批量新增规则内的管理岗位人员考勤数据[异步]
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -32,10 +37,10 @@ namespace Learn.WebApi.Controllers
         public async Task AddManyAsync([FromBody] dynamic value)
         {
             JObject @object = JObject.Parse(value.ToString());
-            ManagePostAttList<ManagePostHistoryAtt> managePostHistoryAttList = @object.ToObject<ManagePostAttList<ManagePostHistoryAtt>>();
-            if (null != managePostHistoryAttList && managePostHistoryAttList.HistoryAtts.Count > 0)
+            ManagePostAttList<ManagePostAtt> ManagePostAttList = @object.ToObject<ManagePostAttList<ManagePostAtt>>();
+            if (null != ManagePostAttList && ManagePostAttList.HistoryAtts.Count > 0)
             {
-                await this._ManagePostHistoryAtt.AddManyAsync(managePostHistoryAttList.HistoryAtts);
+                await this._ManagePostAtt.AddManyAsync(ManagePostAttList.HistoryAtts);
             }
         }
 
@@ -45,11 +50,11 @@ namespace Learn.WebApi.Controllers
         /// <param name="value"></param>
         /// <returns></returns>
         [HttpPost("GetPageListAsync")]
-        public async Task<BaseResultModel<ManagePostHistoryAtt>> GetPageListAsync([FromBody] dynamic value)
+        public async Task<BaseResultModel<ManagePostAtt>> GetPageListAsync([FromBody] dynamic value)
         {
             JObject @object = JObject.Parse(value.ToString());
             ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
-            return await _ManagePostHistoryAtt.GetPageManagePostAtt(search);
+            return await _ManagePostAtt.GetPageManagePostAtt(search);
         }
 
         /// <summary>
@@ -63,23 +68,7 @@ namespace Learn.WebApi.Controllers
         {
             JObject @object = JObject.Parse(value.ToString());
             ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
-            return await _ManagePostHistoryAtt.GetManagePostStatistics(search);
+            return await _ManagePostAtt.GetManagePostStatistics(search);
         }
-
-        [HttpPost("ByPassAttAsync")]
-        public ActionResult ByPassAttAsync(string addressArea = "", bool defaultRule = true, int limit = 100)
-        {
-            try
-            {
-                _ManagePostHistoryAtt.ByPassAttAsync(addressArea, defaultRule, limit);
-                return Ok("操作成功");
-            }
-            catch (Exception ex)
-            {
-                return Ok(ex.Message);
-            }
-        }
-
-
     }
 }

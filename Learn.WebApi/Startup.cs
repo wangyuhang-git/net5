@@ -3,6 +3,7 @@ using AutoMapper;
 using Learn.Business.ManagePositionAtt;
 using Learn.Business.Student;
 using Learn.Interface;
+using Learn.Models.Business;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 
 namespace Learn.WebApi
 {
@@ -38,6 +40,8 @@ namespace Learn.WebApi
 
             //services.AddSession();
 
+            services.AddOptions().Configure<List<ManagePostAttRule>>(Configuration.GetSection("AttendanceRules"));
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             //注册瞬时服务
@@ -60,8 +64,9 @@ namespace Learn.WebApi
 
         }
 
-        public void ConfigureContainer(ContainerBuilder builer)
+        public void ConfigureContainer(ContainerBuilder builder)
         {
+            builder.RegisterGeneric(typeof(ManagePostAttBusiness<,>)).As(typeof(IBaseManagePostAtt<,>));//默认为瞬时模式InstancePerDependency
 
         }
 

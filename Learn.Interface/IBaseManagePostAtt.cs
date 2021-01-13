@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 namespace Learn.Interface
 {
     /// <summary>
-    /// 管理岗位考勤数据[规则内的数据]【作废，改用了泛型接口】
+    /// 管理岗位考勤数据接口【泛型接口】
     /// </summary>
-    public interface IManagePostAtt<T, S> : IBaseManagePostAtt<T, S>
-        where T : BaseModel
-        where S : BaseModel
+    /// <typeparam name="T">历史考勤表（全部考勤数据）</typeparam>
+    /// <typeparam name="S">考勤表（符合规则的考勤数据）</typeparam>
+    public interface IBaseManagePostAtt<T, S>
+        where T : ManagePostAtt
+        where S : ManagePostAtt
     {
         /// <summary>
         /// 新增多条数据[异步]
@@ -36,6 +38,7 @@ namespace Learn.Interface
         /// <param name="search"></param>
         /// <returns></returns>
         Task<BaseResultModel<T>> GetPageManagePostAtt(ManagePostAttPageSearch search);
+
         /// <summary>
         /// 获取管理人员考勤统计数据[异步]
         /// </summary>
@@ -43,5 +46,6 @@ namespace Learn.Interface
         /// <returns></returns>
         Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search);
 
+        void ByPassAttAsync(string addressArea = "", bool defaultRule = true, int limit = 100);
     }
 }

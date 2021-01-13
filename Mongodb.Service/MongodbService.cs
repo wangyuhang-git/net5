@@ -38,6 +38,20 @@ namespace Mongodb.Service
             return list.FirstOrDefault();
         }
 
+        public T Get(Expression<Func<T, bool>> expression)
+        {
+            return collection.Find(expression).FirstOrDefault();
+        }
+
+        public async Task<T> GetAsync(Expression<Func<T, bool>> expression)
+        {
+            var filters = new List<FilterDefinition<T>>();
+            filters.Add(GetAction(expression));
+            var filter = Builders<T>.Filter.And(filters);
+            var fullCollectioin = await collection.FindAsync(filter);
+            return await fullCollectioin.FirstOrDefaultAsync();
+        }
+
         public T Add(T t)
         {
             collection.InsertOne(t);
@@ -65,7 +79,7 @@ namespace Mongodb.Service
             collection.ReplaceOne(t => t.Id == id, tin);
         }
 
-        public async Task UpdataAsync(string id, T tin)
+        public async Task UpdateAsync(string id, T tin)
         {
             await collection.ReplaceOneAsync(t => t.Id == id, tin);
         }
@@ -144,6 +158,121 @@ namespace Mongodb.Service
             var filter = Builders<T>.Filter.And(filters);
             var fullCollectioin = await collection.FindAsync(filter);
             return await fullCollectioin.ToListAsync();
+        }
+
+        /// <summary>
+        /// 获取Top多少条数据
+        /// </summary>
+        /// <param name="limit">条数</param>
+        /// <param name="sortDic">排序字典</param>
+        /// <param name="expression">条件</param>
+        /// <returns></returns>
+        public List<T> GetList(int limit, Dictionary<string, string> sortDic, Expression<Func<T, bool>> expression)
+        {
+            List<T> list = new List<T>();
+            try
+            {
+                var filters = new List<FilterDefinition<T>>();
+                filters.Add(GetAction(expression));
+                FilterDefinition<T> filter = Builders<T>.Filter.And(filters);
+
+                var sort = Builders<T>.Sort;
+                SortDefinition<T> sortDefinition = null;
+                foreach (var item in sortDic)
+                {
+                    if (null == sortDefinition)
+                    {
+                        if (item.Value == "d")
+                        {
+                            sortDefinition = sort.Descending(item.Key);
+                        }
+                        else
+                        {
+                            sortDefinition = sort.Ascending(item.Key);
+                        }
+                    }
+                    else
+                    {
+                        if (item.Value == "d")
+                        {
+                            sortDefinition = sortDefinition.Descending(item.Key);
+                        }
+                        else
+                        {
+                            sortDefinition = sortDefinition.Ascending(item.Key);
+                        }
+                    }
+                }
+                FindOptions<T, T> findOptions = new FindOptions<T, T>();
+                findOptions.Limit = limit;
+                findOptions.Sort = sortDefinition;
+                //Pageable pageable = PageRequest.of(pageNUmber, pageSize);
+                var fullCollectioin = collection.FindSync(filter, findOptions);
+                list = fullCollectioin.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException(ex.Message);
+            }
+            return list;
+        }
+
+        /// <summary>
+        /// 获取Top多少条数据
+        /// </summary>
+        /// <param name="limit">条数</param>
+        /// <param name="sortDic">排序字典</param>
+        /// <param name="expression">条件</param>
+        /// <returns></returns>
+        public async Task<List<T>> GetListAsync(int limit, Dictionary<string, string> sortDic, Expression<Func<T, bool>> expression)
+        {
+            List<T> list = new List<T>();
+            try
+            {
+                var filters = new List<FilterDefinition<T>>();
+                filters.Add(GetAction(expression));
+                FilterDefinition<T> filter = Builders<T>.Filter.And(filters);
+
+                var sort = Builders<T>.Sort;
+                SortDefinition<T> sortDefinition = null;
+                foreach (var item in sortDic)
+                {
+                    if (null == sortDefinition)
+                    {
+                        if (item.Value == "d")
+                        {
+                            sortDefinition = sort.Descending(item.Key);
+                        }
+                        else
+                        {
+                            sortDefinition = sort.Ascending(item.Key);
+                        }
+                    }
+                    else
+                    {
+                        if (item.Value == "d")
+                        {
+                            sortDefinition = sortDefinition.Descending(item.Key);
+                        }
+                        else
+                        {
+                            sortDefinition = sortDefinition.Ascending(item.Key);
+                        }
+                    }
+                }
+                FindOptions<T, T> findOptions = new FindOptions<T, T>();
+                findOptions.Limit = limit;
+                findOptions.Sort = sortDefinition;
+                //Pageable pageable = PageRequest.of(pageNUmber, pageSize);
+                var fullCollectioin = await collection.FindAsync(filter, findOptions);
+                list = await fullCollectioin.ToListAsync();
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return list;
         }
 
         public async Task<BaseResultModel<T>> GetPageListAsync(int pageIndex, int pageSize, Dictionary<string, string> sortDic, Expression<Func<T, bool>> expression)

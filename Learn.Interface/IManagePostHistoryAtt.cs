@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Learn.Interface
 {
     /// <summary>
-    /// 管理岗位人员历史考勤数据
+    /// 管理岗位人员历史考勤数据【作废，改用了泛型接口】
     /// </summary>
     public interface IManagePostHistoryAtt
     {
@@ -35,11 +35,11 @@ namespace Learn.Interface
         /// <returns></returns>
         Task<BaseResultModel<ManagePostHistoryAtt>> GetPageManagePostAtt(ManagePostAttPageSearch search);
 
-       /// <summary>
-       /// 
-       /// </summary>
-       /// <param name="search"></param>
-       /// <returns></returns>
+        /// <summary>
+        /// 获取管理人员考勤统计数据[异步]
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
         Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search);
     }
 }
