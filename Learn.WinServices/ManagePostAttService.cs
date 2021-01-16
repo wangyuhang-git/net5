@@ -25,7 +25,10 @@ namespace Learn.WinServices
         }
 
         System.Threading.Timer timer;
-
+        string url = System.Configuration.ConfigurationManager.AppSettings["ApiUrl"];//Api地址
+        string addressArea = System.Configuration.ConfigurationManager.AppSettings["AddressArea"];//区域
+        bool defaultRule = System.Configuration.ConfigurationManager.AppSettings["DefaultRule"] == "true";//是否默认规则
+        int limit = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["Limit"]);//默认条数
         protected override void OnStart(string[] args)
         {
             //读取配置文件中的间隔时间
@@ -54,11 +57,10 @@ namespace Learn.WinServices
             //   将不满足以上条件的考勤数据放一个集合中，等待批量更新历史状态
             //4、批量添加和更新（符合规则的List及不符合规则的List）历史文档中的数据交换状态和时间（建议3、4组成事务）
 
-            string url = "http://192.168.0.231:8005/api/ManagePostHistoryAtt/ByPassAttAsync";
-            string reString = this.Post(url);
+            string reString = this.Post(url, addressArea, defaultRule, limit);
         }
 
-        //ByPassAttAsync(string addressArea = "", bool defaultRule = true, int skip = 100)
+        //ByPassAttAsync(string addressArea = "", bool defaultRule = true, int limit = 100)
 
         string Post(string url, string addressArea = "", bool defaultRule = true, int limit = 50)
         {
