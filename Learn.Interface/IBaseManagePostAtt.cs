@@ -1,6 +1,7 @@
 ﻿using Learn.Models.Business;
 using Learn.Models.Common;
 using Learn.Models.Entity;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -46,6 +47,23 @@ namespace Learn.Interface
         /// <returns></returns>
         Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search);
 
+        /// <summary>
+        /// 根据管道获取相关数据
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="type"></param>
+        /// <param name="today"></param>
+        /// <returns></returns>
+        Task<BaseResultModel<T>> GetListAggregateAsync(int pageIndex, int pageSize, string type, string today = "y");
+
+        /// <summary>
+        /// 分流符合考勤规则的数据
+        /// </summary>
+        /// <param name="addressArea">项目所属地</param>
+        /// <param name="defaultRule">是否启用默认的考勤规则</param>
+        /// <param name="limit">取Top多少条数据</param>
         void ByPassAttAsync(string addressArea = "", bool defaultRule = true, int limit = 100);
+
     }
 }

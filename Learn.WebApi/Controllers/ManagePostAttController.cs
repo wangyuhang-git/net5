@@ -70,5 +70,6 @@ namespace Learn.WebApi.Controllers
             ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
             return await _ManagePostAtt.GetManagePostStatistics(search);
         }
+
     }
 }

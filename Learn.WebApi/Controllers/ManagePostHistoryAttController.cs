@@ -66,6 +66,12 @@ namespace Learn.WebApi.Controllers
             return await _ManagePostHistoryAtt.GetManagePostStatistics(search);
         }
 
+        [HttpPost("GetListAggregateAsync")]
+        public async Task<BaseResultModel<ManagePostHistoryAtt>> GetListAggregateAsync(int pageIndex, int pageSize, string type = "", string today = "")
+        {
+            return await _ManagePostHistoryAtt.GetListAggregateAsync(pageIndex: pageIndex, pageSize: pageSize, type: type, today: today);
+        }
+
         [HttpPost("ByPassAttAsync")]
         public ActionResult ByPassAttAsync(string addressArea = "", bool defaultRule = true, int limit = 100)
         {

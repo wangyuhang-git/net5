@@ -6,8 +6,12 @@ using Learn.Models.Common;
 using Learn.Models.Entity;
 using Microsoft.Extensions.Options;
 using Mongodb.Service;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +36,7 @@ namespace Learn.Business.ManagePositionAtt
         }
         MongodbService<T> service = new MongodbService<T>(typeof(T).Name);
         MongodbService<S> serviceS = new MongodbService<S>(typeof(S).Name);
+        MongodbBsonService mongodbBsonService = new MongodbBsonService(typeof(T).Name);
         WhereHelper<T> whereHelper = new WhereHelper<T>();
         WhereHelper<S> whereHelperS = new WhereHelper<S>();
         /// <summary>
@@ -104,6 +109,100 @@ namespace Learn.Business.ManagePositionAtt
             return managePostAttStatistics;
         }
 
+        /// <summary>
+        /// 根据管道获取数据[异步]
+        /// </summary>
+        /// <param name="today">是否查询当天的数据，默认当天数据，否则查所有</param>
+        /// <returns></returns>
+        public async Task<BaseResultModel<T>> GetListAggregateAsync(int pageIndex, int pageSize, string type = "project", string today = "y")
+        {
+
+            //string pipelineMatch1 = string.Format(@"{ $match : {'AttendanceTime':{$gte:new Date('{0}')}}}", DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:01");
+            //string pipelineMatch2 = string.Format(@"{ $match : {'AttendanceTime':{$lte:new Date('{0}')}}}", DateTime.Now.ToString("yyyy-MM-dd") + " 23:23:59");
+            string s = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:01";
+            string e = DateTime.Now.ToString("yyyy-MM-dd") + " 23:23:59";
+            string pipelineMatch1 = "{ $match : {'AttendanceTime':{$gte:new Date('" + s + "')}}}";
+            string pipelineMatch2 = "{ $match : {'AttendanceTime':{$lte:new Date('" + e + "')}}}";
+
+            string pipelineSort = "{ $sort:{'AttendanceTime':-1}}";
+            string group = "{'ConstructPermitNum':'$ConstructPermitNum'}";
+            if (type.ToLower() == "person")
+            {
+                group = "{'IdCard':'$IdCard'}";
+            }
+            string pipelineGroup = @"{$group:
+                    {
+                        _id:" + group + @",
+                        'id':{ '$first':'$_id'},
+                        'ConstructPermitNum':{ '$first' :'$ConstructPermitNum'},
+                        'ProjectName':{ '$first' :'$ProjectName'},
+                        'ProjectGuid':{ '$first' :'$ProjectGuid'},
+                        'Company':{ '$first':'$Company'},
+                        'OrganizationCode':{ '$first':'$OrganizationCode'},
+                        'CorpType':{ '$first':'$CorpType'},
+                        'SegmentAddressArea':{ '$first':'$SegmentAddressArea'}, 
+                        'AttendanceTime':{ '$first':'$AttendanceTime'},
+                        'AttendanceId':{ '$first':'$AttendanceId'},
+                        'PersonGUID':{ '$first':'$PersonGUID'},
+                        'PersonName':{ '$first':'$PersonName'},
+                        'IdCard':{ '$first':'$IdCard'},
+                        'PostType':{ '$first':'$PostType'},
+                        'ImageBuffer':{ '$first':'$ImageBuffer'},
+                        'SupervisionDepartment':{ '$first':'$SupervisionDepartment'},
+                        'SupervisionDepartmentGUID':{ '$first':'$SupervisionDepartmentGUID'},
+                        'CreateTime':{ '$first':'$CreateTime'}
+                }
+            }";
+            string pipelineSkip = "{$skip:" + ((pageIndex - 1) * pageSize) + "}";
+            string pipelineLimit = "{$limit:" + pageSize + "}";
+            string pipelineCount = "{$count:'total'}";
+            string pipelineProject = "{$project:{'_id':0,'id':0}}";
+
+            List<string> pipeLinelist = new List<string>();
+            if (today == "y")
+            {
+                pipeLinelist.Add(pipelineMatch1);
+                pipeLinelist.Add(pipelineMatch2);
+            }
+            pipeLinelist.Add(pipelineSort);
+            pipeLinelist.Add(pipelineGroup);
+
+
+            IList<IPipelineStageDefinition> stageList = new List<IPipelineStageDefinition>();
+
+            pipeLinelist.Add(pipelineCount);
+            foreach (string item in pipeLinelist)
+            {
+                PipelineStageDefinition<BsonDocument, BsonDocument> stageGroup = new JsonPipelineStageDefinition<BsonDocument, BsonDocument>(item);
+                stageList.Add(stageGroup);
+            }
+            BsonDocument bsonDocument = await mongodbBsonService.GetAggregateAsync(stageList);
+            BaseResultModel<T> baseResultModel = BsonSerializer.Deserialize<BaseResultModel<T>>(bsonDocument);
+            //baseResultModel.total = (long)t.total;
+
+            //分页
+            pipeLinelist.Clear();
+            stageList.RemoveAt(stageList.Count - 1);
+            pipeLinelist.Add(pipelineSkip);
+            pipeLinelist.Add(pipelineLimit);
+            pipeLinelist.Add(pipelineProject);
+
+            foreach (string item in pipeLinelist)
+            {
+                PipelineStageDefinition<BsonDocument, BsonDocument> stageGroup = new JsonPipelineStageDefinition<BsonDocument, BsonDocument>(item);
+                stageList.Add(stageGroup);
+            }
+            //baseResultModel.rows = await mongodbBsonService.GetListAggregateAsync(stageList);
+            List<T> list = new List<T>();
+            foreach (var item in await mongodbBsonService.GetListAggregateAsync(stageList))
+            {
+                var d = BsonSerializer.Deserialize<BsonDocument>(item);
+                list.Add(BsonSerializer.Deserialize<T>(item));
+            }
+            baseResultModel.rows = list;
+            baseResultModel.success = true;
+            return baseResultModel;
+        }
 
         /// <summary>
         /// 根据考勤规则进行分流数据，符合条件的放在考勤表中，并将所有的数据更新状态

@@ -1,6 +1,7 @@
 ﻿using Learn.Common;
 using Learn.Models.Common;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -271,6 +272,7 @@ namespace Mongodb.Service
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
             }
             return list;
         }
