@@ -47,15 +47,20 @@ namespace Learn.Interface
         /// <returns></returns>
         Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search);
 
+        ///// <summary>
+        ///// 根据管道获取相关数据
+        ///// </summary>
+        ///// <param name="pageIndex"></param>
+        ///// <param name="pageSize"></param>
+        ///// <param name="type"></param>
+        ///// <param name="today"></param>
+        ///// <returns></returns>
         /// <summary>
         /// 根据管道获取相关数据
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="type"></param>
-        /// <param name="today"></param>
+        /// <param name="search"></param>
         /// <returns></returns>
-        Task<BaseResultModel<T>> GetListAggregateAsync(int pageIndex, int pageSize, string type, string today = "y");
+        Task<BaseResultModel<T>> GetListAggregateAsync(ManagePostAttPageSearch search);
 
         /// <summary>
         /// 分流符合考勤规则的数据

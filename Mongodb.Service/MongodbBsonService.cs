@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Mongodb.Service
 {
+    /// <summary>
+    /// BsonDocument文档操作（主要是管道）
+    /// </summary>
     public class MongodbBsonService
     {
         protected readonly IMongoCollection<BsonDocument> collection;

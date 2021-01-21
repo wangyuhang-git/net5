@@ -112,65 +112,59 @@ namespace Learn.Business.ManagePositionAtt
         /// <summary>
         /// 根据管道获取数据[异步]
         /// </summary>
-        /// <param name="today">是否查询当天的数据，默认当天数据，否则查所有</param>
+        /// <param name="search"></param>
         /// <returns></returns>
-        public async Task<BaseResultModel<T>> GetListAggregateAsync(int pageIndex, int pageSize, string type = "project", string today = "y")
+        public async Task<BaseResultModel<T>> GetListAggregateAsync(ManagePostAttPageSearch search)
         {
+            Dictionary<string, string> searchDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(search.SearchDic.ToString());
+            Dictionary<string, string> sortDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(search.SortDic.ToString());
 
-            //string pipelineMatch1 = string.Format(@"{ $match : {'AttendanceTime':{$gte:new Date('{0}')}}}", DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:01");
-            //string pipelineMatch2 = string.Format(@"{ $match : {'AttendanceTime':{$lte:new Date('{0}')}}}", DateTime.Now.ToString("yyyy-MM-dd") + " 23:23:59");
-            string s = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:01";
-            string e = DateTime.Now.ToString("yyyy-MM-dd") + " 23:23:59";
-            string pipelineMatch1 = "{ $match : {'AttendanceTime':{$gte:new Date('" + s + "')}}}";
-            string pipelineMatch2 = "{ $match : {'AttendanceTime':{$lte:new Date('" + e + "')}}}";
+            PipeLineBsonHelper pipeLineBsonHelper = new PipeLineBsonHelper();
+            List<string> pipeLinelist = new List<string>();
 
-            string pipelineSort = "{ $sort:{'AttendanceTime':-1}}";
-            string group = "{'ConstructPermitNum':'$ConstructPermitNum'}";
-            if (type.ToLower() == "person")
+            #region 过滤（条件查询）
+            pipeLineBsonHelper.AddMatchList(searchDic, pipeLinelist);
+            #endregion
+
+            #region 分组(用 $last排序，后续改为属性映射独立方法 )
+
+            if (string.IsNullOrEmpty(search.GroupField))
             {
-                group = "{'IdCard':'$IdCard'}";
+                throw new ArgumentNullException($"分组参数{nameof(search.GroupField)}不能为空！");
             }
+
+            string group = "{'" + search.GroupField + "':'$" + search.GroupField + "'}";
             string pipelineGroup = @"{$group:
                     {
                         _id:" + group + @",
                         'id':{ '$first':'$_id'},
                         'ConstructPermitNum':{ '$first' :'$ConstructPermitNum'},
-                        'ProjectName':{ '$first' :'$ProjectName'},
-                        'ProjectGuid':{ '$first' :'$ProjectGuid'},
-                        'Company':{ '$first':'$Company'},
-                        'OrganizationCode':{ '$first':'$OrganizationCode'},
-                        'CorpType':{ '$first':'$CorpType'},
-                        'SegmentAddressArea':{ '$first':'$SegmentAddressArea'}, 
-                        'AttendanceTime':{ '$first':'$AttendanceTime'},
-                        'AttendanceId':{ '$first':'$AttendanceId'},
-                        'PersonGUID':{ '$first':'$PersonGUID'},
-                        'PersonName':{ '$first':'$PersonName'},
-                        'IdCard':{ '$first':'$IdCard'},
-                        'PostType':{ '$first':'$PostType'},
-                        'ImageBuffer':{ '$first':'$ImageBuffer'},
-                        'SupervisionDepartment':{ '$first':'$SupervisionDepartment'},
-                        'SupervisionDepartmentGUID':{ '$first':'$SupervisionDepartmentGUID'},
-                        'CreateTime':{ '$first':'$CreateTime'}
+                        'ProjectName':{ '$last' :'$ProjectName'},
+                        'ProjectGuid':{ '$last' :'$ProjectGuid'},
+                        'Company':{ '$last':'$Company'},
+                        'OrganizationCode':{ '$last':'$OrganizationCode'},
+                        'CorpType':{ '$last':'$CorpType'},
+                        'SegmentAddressArea':{ '$last':'$SegmentAddressArea'}, 
+                        'AttendanceTime':{ '$last':'$AttendanceTime'},
+                        'AttendanceId':{ '$last':'$AttendanceId'},
+                        'PersonGUID':{ '$last':'$PersonGUID'},
+                        'PersonName':{ '$last':'$PersonName'},
+                        'IdCard':{ '$last':'$IdCard'},
+                        'PostType':{ '$last':'$PostType'},
+                        'ImageBuffer':{ '$last':'$ImageBuffer'},
+                        'SupervisionDepartment':{ '$last':'$SupervisionDepartment'},
+                        'SupervisionDepartmentGUID':{ '$last':'$SupervisionDepartmentGUID'},
+                        'CreateTime':{ '$last':'$CreateTime'}
                 }
             }";
-            string pipelineSkip = "{$skip:" + ((pageIndex - 1) * pageSize) + "}";
-            string pipelineLimit = "{$limit:" + pageSize + "}";
-            string pipelineCount = "{$count:'total'}";
-            string pipelineProject = "{$project:{'_id':0,'id':0}}";
-
-            List<string> pipeLinelist = new List<string>();
-            if (today == "y")
-            {
-                pipeLinelist.Add(pipelineMatch1);
-                pipeLinelist.Add(pipelineMatch2);
-            }
-            pipeLinelist.Add(pipelineSort);
             pipeLinelist.Add(pipelineGroup);
+            #endregion
 
+            #region 总数（根据条件查询总数）
+            string pipelineCount = "{$count:'total'}";
+            pipeLinelist.Add(pipelineCount);
 
             IList<IPipelineStageDefinition> stageList = new List<IPipelineStageDefinition>();
-
-            pipeLinelist.Add(pipelineCount);
             foreach (string item in pipeLinelist)
             {
                 PipelineStageDefinition<BsonDocument, BsonDocument> stageGroup = new JsonPipelineStageDefinition<BsonDocument, BsonDocument>(item);
@@ -179,13 +173,27 @@ namespace Learn.Business.ManagePositionAtt
             BsonDocument bsonDocument = await mongodbBsonService.GetAggregateAsync(stageList);
             BaseResultModel<T> baseResultModel = BsonSerializer.Deserialize<BaseResultModel<T>>(bsonDocument);
             //baseResultModel.total = (long)t.total;
+            #endregion
 
-            //分页
+            //移除总数
             pipeLinelist.Clear();
             stageList.RemoveAt(stageList.Count - 1);
+
+            #region 排序
+            pipeLineBsonHelper.AddSortList(sortDic, pipeLinelist);
+            #endregion
+
+            #region 分页
+            string pipelineSkip = "{$skip:" + ((search.PageIndex - 1) * search.PageSize) + "}";
+            string pipelineLimit = "{$limit:" + search.PageSize + "}";
             pipeLinelist.Add(pipelineSkip);
             pipeLinelist.Add(pipelineLimit);
+            #endregion
+
+            #region 映射
+            string pipelineProject = "{$project:{'_id':0,'id':0}}";
             pipeLinelist.Add(pipelineProject);
+            #endregion
 
             foreach (string item in pipeLinelist)
             {
