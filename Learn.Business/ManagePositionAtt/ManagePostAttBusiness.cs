@@ -170,9 +170,19 @@ namespace Learn.Business.ManagePositionAtt
                 PipelineStageDefinition<BsonDocument, BsonDocument> stageGroup = new JsonPipelineStageDefinition<BsonDocument, BsonDocument>(item);
                 stageList.Add(stageGroup);
             }
+            BaseResultModel<T> baseResultModel = new BaseResultModel<T>();
             BsonDocument bsonDocument = await mongodbBsonService.GetAggregateAsync(stageList);
-            BaseResultModel<T> baseResultModel = BsonSerializer.Deserialize<BaseResultModel<T>>(bsonDocument);
-            //baseResultModel.total = (long)t.total;
+            if (null != bsonDocument)
+            {
+                baseResultModel = BsonSerializer.Deserialize<BaseResultModel<T>>(bsonDocument);
+            }
+            else
+            {
+                baseResultModel.total = 0;
+                baseResultModel.rows = new List<T>();
+                baseResultModel.success = false;
+                return baseResultModel;
+            }
             #endregion
 
             //移除总数

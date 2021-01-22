@@ -2,6 +2,7 @@
 using Learn.Models.Business;
 using Learn.Models.Common;
 using Learn.Models.Entity;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -13,6 +14,7 @@ namespace Learn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")]
     public class ManagePostHistoryAttController : ControllerBase
     {
         private readonly IBaseManagePostAtt<ManagePostHistoryAtt, ManagePostAtt> _ManagePostHistoryAtt;

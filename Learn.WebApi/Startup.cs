@@ -28,6 +28,22 @@ namespace Learn.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //跨域配置
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                {
+                    string[] cors = Configuration.GetSection("AllowedCors").Value.Split(new char[] { ',', '|' });
+                    //Console.WriteLine(Configuration.GetSection("AllowedCors").Value);
+                    builder
+                    .WithOrigins(cors)
+                    //.AllowAnyOrigin() //允许任何来源的主机访问
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                    //.AllowCredentials();//指定处理cookie
+                });
+            });
+
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
@@ -61,7 +77,6 @@ namespace Learn.WebApi
             //    Console.WriteLine(serviceProvider.GetService(typeof(StudentBusiness)));
             //    return new StudentBusiness();
             //});
-
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -85,6 +100,9 @@ namespace Learn.WebApi
             app.UseRouting();
 
             app.UseAuthorization();
+
+            //启用跨域
+            app.UseCors("AllowSpecificOrigin");
 
             app.UseEndpoints(endpoints =>
             {
