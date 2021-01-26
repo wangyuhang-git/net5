@@ -84,7 +84,7 @@ namespace Learn.WebApi.Controllers
         /// <summary>
         /// 根据施工许可证号码、身份证号码、日期分组统计考勤人数
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">postman eg:{//"SortDic":{"AttendanceTime":"d"},"SearchDic":{"s_1_ConstructPermitNum":"330591202009290202","s_3_AttendanceTime":"2021-01-24 00:00:01,2021-01-26 23:59:59"}}</param>
         /// <returns></returns>
         [HttpPost("GetListStatisticsAsync")]
         public async Task<IEnumerable<ManagePostAttStatistics>> GetListStatisticsAsync([FromBody] dynamic value)
