@@ -82,6 +82,19 @@ namespace Learn.WebApi.Controllers
         }
 
         /// <summary>
+        /// 根据施工许可证号码、身份证号码、日期分组统计考勤人数
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        [HttpPost("GetListStatisticsAsync")]
+        public async Task<IEnumerable<ManagePostAttStatistics>> GetListStatisticsAsync([FromBody] dynamic value)
+        {
+            JObject @object = JObject.Parse(value.ToString());
+            ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
+            return await _ManagePostHistoryAtt.GetListStatisticsAsync(search);
+        }
+
+        /// <summary>
         /// 分流符合考勤规则的数据（暂时未window service调用）
         /// </summary>
         /// <param name="addressArea">地区</param>

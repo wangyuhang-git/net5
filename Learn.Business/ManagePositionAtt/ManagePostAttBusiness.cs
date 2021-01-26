@@ -74,40 +74,6 @@ namespace Learn.Business.ManagePositionAtt
             return await this.GetPageManagePostAtt(search.PageIndex, search.PageSize, sortDic, searchDic);
         }
 
-        /// <summary>
-        /// 获取管理岗位统计数据，包含总考勤项目数、今日考勤项目数、今日考勤人数[异步]
-        /// </summary>
-        /// <param name="search"></param>
-        /// <returns></returns>
-        public async Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search)
-        {
-            ManagePostAttStatistics managePostAttStatistics = new ManagePostAttStatistics();
-            Dictionary<string, string> searchDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(search.SearchDic.ToString());
-
-            Dictionary<string, string> searchDicTotal = null;
-
-            searchDicTotal = new Dictionary<string, string>();
-
-            if (!searchDic.ContainsKey("s_3_AttendanceTime"))
-            {
-                searchDic.Add("s_3_AttendanceTime", $"{DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:01"},{DateTime.Now.ToString("yyyy-MM-dd") + " 23:59:59"}");
-            }
-
-            if (searchDic.ContainsKey("s_1_SegmentAddressArea"))
-            {
-                searchDicTotal.Add("s_1_SegmentAddressArea", searchDic["s_1_SegmentAddressArea"]);
-            }
-
-            Expression<Func<T, bool>> expression = whereHelper.GetExpression(searchDic);
-            managePostAttStatistics.AttProjectTodayCount = await service.GetDistinctCountAsync(expression, "ConstructPermitNum");
-            managePostAttStatistics.AttPersonTodayCount = await service.GetDistinctCountAsync(expression, "IdCard");
-
-            expression = whereHelper.GetExpression(searchDicTotal);
-            //whereHelper.GetExpression(searchDicTotal)
-            managePostAttStatistics.AttProjectTotal = await service.GetDistinctCountAsync(expression, "ConstructPermitNum");
-
-            return managePostAttStatistics;
-        }
 
         /// <summary>
         /// 根据管道获取数据[异步]
@@ -220,6 +186,122 @@ namespace Learn.Business.ManagePositionAtt
             baseResultModel.rows = list;
             baseResultModel.success = true;
             return baseResultModel;
+        }
+
+
+        /// <summary>
+        /// 获取管理岗位统计数据，包含总考勤项目数、今日考勤项目数、今日考勤人数[异步]
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public async Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search)
+        {
+            ManagePostAttStatistics managePostAttStatistics = new ManagePostAttStatistics();
+            Dictionary<string, string> searchDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(search.SearchDic.ToString());
+
+            Dictionary<string, string> searchDicTotal = null;
+
+            searchDicTotal = new Dictionary<string, string>();
+
+            if (!searchDic.ContainsKey("s_3_AttendanceTime"))
+            {
+                searchDic.Add("s_3_AttendanceTime", $"{DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:01"},{DateTime.Now.ToString("yyyy-MM-dd") + " 23:59:59"}");
+            }
+
+            if (searchDic.ContainsKey("s_1_SegmentAddressArea"))
+            {
+                searchDicTotal.Add("s_1_SegmentAddressArea", searchDic["s_1_SegmentAddressArea"]);
+            }
+
+            Expression<Func<T, bool>> expression = whereHelper.GetExpression(searchDic);
+            managePostAttStatistics.AttProjectTodayCount = await service.GetDistinctCountAsync(expression, "ConstructPermitNum");
+            managePostAttStatistics.AttPersonTodayCount = await service.GetDistinctCountAsync(expression, "IdCard");
+
+            expression = whereHelper.GetExpression(searchDicTotal);
+            //whereHelper.GetExpression(searchDicTotal)
+            managePostAttStatistics.AttProjectTotal = await service.GetDistinctCountAsync(expression, "ConstructPermitNum");
+
+            return managePostAttStatistics;
+        }
+
+        /// <summary>
+        /// 根据施工许可证号码、身份证号码、日期分组统计考勤人数
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<ManagePostAttStatistics>> GetListStatisticsAsync(ManagePostAttPageSearch search)
+        {
+            if (null == search)
+            {
+                throw new ArgumentNullException($"查询条件{nameof(search.SearchDic)}不能为空！");
+            }
+            Dictionary<string, string> searchDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(search.SearchDic.ToString());
+
+            PipeLineBsonHelper pipeLineBsonHelper = new PipeLineBsonHelper();
+            List<string> pipeLinelist = new List<string>();
+
+            #region 过滤（条件查询）
+            pipeLineBsonHelper.AddMatchList(searchDic, pipeLinelist);
+            #endregion
+
+            #region 分组(用 $last排序，后续改为属性映射独立方法 )
+
+            string group = "{'ConstructPermitNum':'$ConstructPermitNum'";
+            group += ",'IdCard':'$IdCard'";
+            group += ",'day':{'$substr':[{'$add':['$AttendanceTime', 28800000]},0,10]}";
+            group += "}";
+            string pipelineGroup1 = @"{$group:
+                    {
+                        _id:" + group + @",
+                        'ConstructPermitNum':{ '$first' :'$ConstructPermitNum'},
+                        'ProjectName':{ '$last' :'$ProjectName'},
+                        'ProjectGuid':{ '$last' :'$ProjectGuid'},                        
+                        'AttendanceTime':{ '$last':'$AttendanceTime'}
+                     }
+            }";
+            pipeLinelist.Add(pipelineGroup1);
+
+            string pipelineGroup2 = @"{$group:
+                    {
+                        _id:" + group + @",
+                        'ConstructPermitNum':{ '$first' :'$ConstructPermitNum'},
+                        'ProjectName':{ '$last' :'$ProjectName'},
+                        'ProjectGuid':{ '$last' :'$ProjectGuid'}, 
+                        'AttendanceTime':{ '$last':'$AttendanceTime'},
+                        'AttPersonCount':{'$sum':1}
+                     }
+            }";
+            pipeLinelist.Add(pipelineGroup2);
+
+            #endregion
+
+            #region 排序
+            if (null != search.SortDic)
+            {
+                Dictionary<string, string> sortDic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(search.SortDic.ToString());
+                pipeLineBsonHelper.AddSortList(sortDic, pipeLinelist);
+            }
+            #endregion
+
+            #region 映射
+            string pipelineProject = "{$project:{'_id':0}}";
+            pipeLinelist.Add(pipelineProject);
+            #endregion
+
+            IList<IPipelineStageDefinition> stageList = new List<IPipelineStageDefinition>();
+            foreach (string item in pipeLinelist)
+            {
+                PipelineStageDefinition<BsonDocument, BsonDocument> stageGroup = new JsonPipelineStageDefinition<BsonDocument, BsonDocument>(item);
+                stageList.Add(stageGroup);
+            }
+            //baseResultModel.rows = await mongodbBsonService.GetListAggregateAsync(stageList);
+            List<ManagePostAttStatistics> list = new List<ManagePostAttStatistics>();
+            foreach (var item in await mongodbBsonService.GetListAggregateAsync(stageList))
+            {
+                var d = BsonSerializer.Deserialize<BsonDocument>(item);
+                list.Add(BsonSerializer.Deserialize<ManagePostAttStatistics>(item));
+            }
+            return list;
         }
 
         /// <summary>

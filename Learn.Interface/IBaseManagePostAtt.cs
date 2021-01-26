@@ -40,13 +40,6 @@ namespace Learn.Interface
         /// <returns></returns>
         Task<BaseResultModel<T>> GetPageManagePostAtt(ManagePostAttPageSearch search);
 
-        /// <summary>
-        /// 获取管理人员考勤统计数据[异步]
-        /// </summary>
-        /// <param name="search"></param>
-        /// <returns></returns>
-        Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search);
-
         ///// <summary>
         ///// 根据管道获取相关数据
         ///// </summary>
@@ -62,6 +55,21 @@ namespace Learn.Interface
         /// <returns></returns>
         Task<BaseResultModel<T>> GetListAggregateAsync(ManagePostAttPageSearch search);
 
+
+        /// <summary>
+        /// 获取管理人员考勤统计数据[异步]
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        Task<ManagePostAttStatistics> GetManagePostStatistics(ManagePostAttPageSearch search);
+
+        /// <summary>
+        /// 根据施工许可证号码、身份证号码、日期分组统计考勤人数
+        /// </summary>
+        /// <param name="search"></param>
+        /// <returns></returns>
+        Task<IEnumerable<ManagePostAttStatistics>> GetListStatisticsAsync(ManagePostAttPageSearch search);
+
         /// <summary>
         /// 分流符合考勤规则的数据
         /// </summary>
@@ -69,6 +77,7 @@ namespace Learn.Interface
         /// <param name="defaultRule">是否启用默认的考勤规则</param>
         /// <param name="limit">取Top多少条数据</param>
         void ByPassAttAsync(string addressArea = "", bool defaultRule = true, int limit = 100);
+
 
     }
 }
