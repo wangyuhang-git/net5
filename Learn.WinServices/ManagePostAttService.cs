@@ -56,8 +56,15 @@ namespace Learn.WinServices
             //3、将满足以上条件的考勤数据放在一个集合中，等待批量添加
             //   将不满足以上条件的考勤数据放一个集合中，等待批量更新历史状态
             //4、批量添加和更新（符合规则的List及不符合规则的List）历史文档中的数据交换状态和时间（建议3、4组成事务）
-
-            string reString = this.Post(url, addressArea, defaultRule, limit);
+            try
+            {
+                string reString = this.Post(url, addressArea, defaultRule, limit);
+                Helper.SaveLog($"执行成功，返回值为：{reString}");
+            }
+            catch (Exception ex)
+            {
+                Helper.SaveLog($"执行失败，原因为：{ex.Message}");
+            }
         }
 
         //ByPassAttAsync(string addressArea = "", bool defaultRule = true, int limit = 100)
