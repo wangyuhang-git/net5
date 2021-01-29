@@ -1,32 +1,35 @@
-﻿using Learn.Interface;
+﻿using AutoMapper;
+using Learn.Interface;
 using Learn.Models.Business;
 using Learn.Models.Common;
 using Learn.Models.Entity;
-using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Learn.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("AllowSpecificOrigin")]
-    public class ManagePostHistoryAttController : ControllerBase
+    public class ManagePostAttController : ControllerBase
     {
-        private readonly IBaseManagePostAtt<ManagePostHistoryAtt, ManagePostAtt> _ManagePostHistoryAtt;
-        private readonly ILogger<ManagePostHistoryAttController> _Logger;
-        public ManagePostHistoryAttController(ILogger<ManagePostHistoryAttController> Logger, IBaseManagePostAtt<ManagePostHistoryAtt, ManagePostAtt> ManagePostHistoryAtt)
+        private readonly IBaseManagePostAtt<ManagePostAtt, ManagePostAtt> _ManagePostAtt;
+        private readonly ILogger<ManagePostAttController> _Logger;
+        private readonly IMapper _Mapper;
+        public ManagePostAttController(IMapper Mapper, ILogger<ManagePostAttController> Logger, IBaseManagePostAtt<ManagePostAtt, ManagePostAtt> ManagePostAtt)
         {
             this._Logger = Logger;
-            this._ManagePostHistoryAtt = ManagePostHistoryAtt;
+            this._ManagePostAtt = ManagePostAtt;
+            this._Mapper = Mapper;
         }
 
         /// <summary>
-        /// 批量新增管理岗位人员考勤数据[异步]
+        /// 批量新增规则内的管理岗位人员考勤数据[异步]
         /// </summary>
         /// <param name="value">postman eg:{"HistoryAtts": [{"AttendanceId": "3a53d5c5-b5c3-4514-a90e-115f51e66f92" }]}</param>
         /// <returns></returns>
@@ -34,10 +37,10 @@ namespace Learn.WebApi.Controllers
         public async Task AddManyAsync([FromBody] dynamic value)
         {
             JObject @object = JObject.Parse(value.ToString());
-            ManagePostAttList<ManagePostHistoryAtt> managePostHistoryAttList = @object.ToObject<ManagePostAttList<ManagePostHistoryAtt>>();
-            if (null != managePostHistoryAttList && managePostHistoryAttList.HistoryAtts.Count > 0)
+            ManagePostAttList<ManagePostAtt> ManagePostAttList = @object.ToObject<ManagePostAttList<ManagePostAtt>>();
+            if (null != ManagePostAttList && ManagePostAttList.HistoryAtts.Count > 0)
             {
-                await this._ManagePostHistoryAtt.AddManyAsync(managePostHistoryAttList.HistoryAtts);
+                await this._ManagePostAtt.AddManyAsync(ManagePostAttList.HistoryAtts);
             }
         }
 
@@ -47,11 +50,11 @@ namespace Learn.WebApi.Controllers
         /// <param name="value">postman eg:{"PageIndex":1,"PageSize":15,"SortDic":{"AttendanceTime":"d","CreateTime":"d"},"SearchDic":{"s_1_SegmentAddressArea":"市本级","s_1_SupervisionDepartment":"房建监督二科"}}</param>
         /// <returns></returns>
         [HttpPost("GetPageListAsync")]
-        public async Task<BaseResultModel<ManagePostHistoryAtt>> GetPageListAsync([FromBody] dynamic value)
+        public async Task<BaseResultModel<ManagePostAtt>> GetPageListAsync([FromBody] dynamic value)
         {
             JObject @object = JObject.Parse(value.ToString());
             ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
-            return await _ManagePostHistoryAtt.GetPageManagePostAtt(search);
+            return await _ManagePostAtt.GetPageManagePostAtt(search);
         }
 
         /// <summary>
@@ -65,7 +68,7 @@ namespace Learn.WebApi.Controllers
         {
             JObject @object = JObject.Parse(value.ToString());
             ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
-            return await _ManagePostHistoryAtt.GetManagePostStatistics(search);
+            return await _ManagePostAtt.GetManagePostStatistics(search);
         }
 
         /// <summary>
@@ -74,11 +77,11 @@ namespace Learn.WebApi.Controllers
         /// <param name="value">postman eg:{"PageIndex":1,"PageSize":15,"GroupField":"ConstructPermitNum","SortDic":{"AttendanceTime":"d"},"SearchDic":{"s_1_SegmentAddressArea":"南浔区","s_3_AttendanceTime":"2021-01-18 00:00:01,2021-01-19 23:59:59","s_0_ProjectName|PersonName":"浔适园单元CD-01-01-06地块"}}</param>
         /// <returns></returns>
         [HttpPost("GetListAggregateAsync")]
-        public async Task<BaseResultModel<ManagePostHistoryAtt>> GetListAggregateAsync([FromBody] dynamic value)
+        public async Task<BaseResultModel<ManagePostAtt>> GetListAggregateAsync([FromBody] dynamic value)
         {
             JObject @object = JObject.Parse(value.ToString());
             ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
-            return await _ManagePostHistoryAtt.GetListAggregateAsync(search);
+            return await _ManagePostAtt.GetListAggregateAsync(search);
         }
 
         /// <summary>
@@ -91,30 +94,8 @@ namespace Learn.WebApi.Controllers
         {
             JObject @object = JObject.Parse(value.ToString());
             ManagePostAttPageSearch search = @object.ToObject<ManagePostAttPageSearch>();
-            return await _ManagePostHistoryAtt.GetListStatisticsAsync(search);
+            return await _ManagePostAtt.GetListStatisticsAsync(search);
         }
-
-        /// <summary>
-        /// 分流符合考勤规则的数据（暂时未window service调用）
-        /// </summary>
-        /// <param name="addressArea">地区</param>
-        /// <param name="defaultRule">是否启用默认考勤规则，默认启用</param>
-        /// <param name="limit">一次取top的条数</param>
-        /// <returns></returns>
-        [HttpPost("ByPassAttAsync")]
-        public ActionResult ByPassAttAsync(string addressArea = "", bool defaultRule = true, int limit = 100)
-        {
-            try
-            {
-                _ManagePostHistoryAtt.ByPassAttAsync(addressArea, defaultRule, limit);
-                return Ok("操作成功");
-            }
-            catch (Exception ex)
-            {
-                return Ok(ex.Message);
-            }
-        }
-
 
     }
 }

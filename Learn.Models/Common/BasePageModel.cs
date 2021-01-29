@@ -26,6 +26,9 @@ namespace Learn.Models.Common
         /// 去重的字段
         /// </summary>
         public string DistinctField { get; set; }
-
+        /// <summary>
+        /// 分组字段
+        /// </summary>
+        public string GroupField { get; set; }
     }
 }

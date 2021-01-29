@@ -6,8 +6,8 @@ using System.Text;
 namespace Learn.Models.Business
 {
     [Serializable]
-    public class ManagePostHistoryAttList
+    public class ManagePostAttList<T> where T: ManagePostAtt
     {
-        public List<ManagePostHistoryAtt> HistoryAtts { get; set; }
+        public List<T> HistoryAtts { get; set; }
     }
 }

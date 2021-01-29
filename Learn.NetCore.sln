@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Learn.WebApi", "Learn.WebAp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mongodb.Service", "Mongodb.Service\Mongodb.Service.csproj", "{6D69BBCF-EFE3-4CAB-A659-24E3011C1DCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learn.Business", "Learn.Business\Learn.Business.csproj", "{A61AC73B-EF40-42C0-8120-A0AD5E179D45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Learn.Business", "Learn.Business\Learn.Business.csproj", "{A61AC73B-EF40-42C0-8120-A0AD5E179D45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learn.Interface", "Learn.Interface\Learn.Interface.csproj", "{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Learn.Interface", "Learn.Interface\Learn.Interface.csproj", "{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Learn.WinServices", "Learn.WinServices\Learn.WinServices.csproj", "{8685690D-B936-42B2-B6D1-04B27A041B47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70FF8DB9-8826-4AB2-BFFD-7D627BA45D53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8685690D-B936-42B2-B6D1-04B27A041B47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8685690D-B936-42B2-B6D1-04B27A041B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8685690D-B936-42B2-B6D1-04B27A041B47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8685690D-B936-42B2-B6D1-04B27A041B47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

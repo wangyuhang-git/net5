@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Learn.Business.ManagePositionAtt
 {
     /// <summary>
-    /// 管理岗位人员历史考勤数据操作
+    /// 管理岗位人员历史考勤数据操作【作废，改为了泛型接口实现类】
     /// </summary>
     public class ManagePostHistoryAttBusiness : IManagePostHistoryAtt
     {

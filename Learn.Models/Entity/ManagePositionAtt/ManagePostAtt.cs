@@ -69,5 +69,25 @@ namespace Learn.Models.Entity
         /// 考勤图片
         /// </summary>
         public string ImageBuffer { get; set; }
+
+        /// <summary>
+        /// 监督科室
+        /// </summary>
+        public string SupervisionDepartment { get; set; }
+
+        /// <summary>
+        /// 监督科室GUID
+        /// </summary>
+        public string SupervisionDepartmentGUID { get; set; }
+
+        /// <summary>
+        /// 数据交换状态，默认为0，交换成功1，失败为2
+        /// </summary>
+        public int Status { get; set; }
+        /// <summary>
+        /// 数据交换时间
+        /// </summary>
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
+        public DateTime? StatusTime { get; set; }
     }
 }

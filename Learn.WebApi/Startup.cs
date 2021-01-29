@@ -3,6 +3,7 @@ using AutoMapper;
 using Learn.Business.ManagePositionAtt;
 using Learn.Business.Student;
 using Learn.Interface;
+using Learn.Models.Business;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Collections.Generic;
 
 namespace Learn.WebApi
 {
@@ -26,6 +28,22 @@ namespace Learn.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //????????
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                {
+                    string[] cors = Configuration.GetSection("AllowedCors").Value.Split(new char[] { ',', '|' });
+                    //Console.WriteLine(Configuration.GetSection("AllowedCors").Value);
+                    builder
+                    .WithOrigins(cors)
+                    //.AllowAnyOrigin() //?????κ??????????????
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                    //.AllowCredentials();//???????cookie
+                });
+            });
+
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
@@ -38,14 +56,16 @@ namespace Learn.WebApi
 
             //services.AddSession();
 
+            services.AddOptions().Configure<List<ManagePostAttRule>>(Configuration.GetSection("AttendanceRules"));
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            //注册瞬时服务
+            //?????????
             //services.AddTransient<IStudent, StudentBusiness>();
             services.AddTransient<IStudent, StudentBusinessEx>();
             services.Replace(ServiceDescriptor.Singleton<IStudent, StudentBusiness>());
 
-            //注册管理岗位人员考勤服务[工程模式]
+            //???????λ??????????[??????]
             services.AddTransient<IManagePostHistoryAtt>(serviceProvider =>
             {
                 //serviceProvider.GetService(typeof(ManagePostHistoryAttBusiness));
@@ -57,14 +77,11 @@ namespace Learn.WebApi
             //    Console.WriteLine(serviceProvider.GetService(typeof(StudentBusiness)));
             //    return new StudentBusiness();
             //});
-
         }
-        /// <summary>
-        /// 此方法会被AutoFac调用
-        /// </summary>
-        /// <param name="builer"></param>
+
         public void ConfigureContainer(ContainerBuilder builer)
         {
+            builder.RegisterGeneric(typeof(ManagePostAttBusiness<,>)).As(typeof(IBaseManagePostAtt<,>));//????????InstancePerDependency
 
         }
 
@@ -83,6 +100,9 @@ namespace Learn.WebApi
             app.UseRouting();
 
             app.UseAuthorization();
+
+            //???????
+            app.UseCors("AllowSpecificOrigin");
 
             app.UseEndpoints(endpoints =>
             {

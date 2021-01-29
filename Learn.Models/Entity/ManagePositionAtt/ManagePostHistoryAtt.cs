@@ -13,15 +13,6 @@ namespace Learn.Models.Entity
     public class ManagePostHistoryAtt : ManagePostAtt
     {
         /// <summary>
-        /// 数据交换状态，默认为0，交换成功1，失败为2
-        /// </summary>
-        public int Status { get; set; }
-        /// <summary>
-        /// 数据交换时间
-        /// </summary>
-        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime? StatusTime { get; set; }
-        /// <summary>
         /// 是否满足考勤规则
         /// </summary>
         public bool IsRule { get; set; }

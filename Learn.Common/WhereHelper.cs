@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace Learn.Common
@@ -36,8 +37,18 @@ namespace Learn.Common
         /// <param name="type">and 还是 or</param>
         public void Equal(string propertyName, object value, string type)
         {
-            Expression left = Expression.Property(param, typeof(T).GetProperty(propertyName));
-            Expression right = Expression.Constant(value, value.GetType());
+            PropertyInfo propertyInfo = typeof(T).GetProperty(propertyName);
+            Expression left = Expression.Property(param, propertyInfo);
+            //Expression right = Expression.Constant(value, value.GetType());
+            Expression right = null;
+            if (propertyInfo.PropertyType == typeof(System.Int32))
+            {
+                right = Expression.Constant(Convert.ToInt32(value), propertyInfo.PropertyType);
+            }
+            else
+            {
+                right = Expression.Constant(value, value.GetType());
+            }
             Expression result = Expression.Equal(left, right);
             if (type.ToLower() == "and")
                 filter = Expression.And(filter, result);
