@@ -28,7 +28,7 @@ namespace Learn.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //????????
+            //跨域配置
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin", builder =>
@@ -37,10 +37,10 @@ namespace Learn.WebApi
                     //Console.WriteLine(Configuration.GetSection("AllowedCors").Value);
                     builder
                     .WithOrigins(cors)
-                    //.AllowAnyOrigin() //?????κ??????????????
+                    //.AllowAnyOrigin() //允许任何来源的主机访问
                     .AllowAnyMethod()
                     .AllowAnyHeader();
-                    //.AllowCredentials();//???????cookie
+                    //.AllowCredentials();//指定处理cookie
                 });
             });
 
@@ -60,12 +60,12 @@ namespace Learn.WebApi
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            //?????????
+            //注册瞬时服务
             //services.AddTransient<IStudent, StudentBusiness>();
             services.AddTransient<IStudent, StudentBusinessEx>();
             services.Replace(ServiceDescriptor.Singleton<IStudent, StudentBusiness>());
 
-            //???????λ??????????[??????]
+            //注册管理岗位人员考勤服务[工程模式]
             services.AddTransient<IManagePostHistoryAtt>(serviceProvider =>
             {
                 //serviceProvider.GetService(typeof(ManagePostHistoryAttBusiness));
@@ -79,9 +79,9 @@ namespace Learn.WebApi
             //});
         }
 
-        public void ConfigureContainer(ContainerBuilder builer)
+        public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterGeneric(typeof(ManagePostAttBusiness<,>)).As(typeof(IBaseManagePostAtt<,>));//????????InstancePerDependency
+            builder.RegisterGeneric(typeof(ManagePostAttBusiness<,>)).As(typeof(IBaseManagePostAtt<,>));//默认为瞬时模式InstancePerDependency
 
         }
 
@@ -101,7 +101,7 @@ namespace Learn.WebApi
 
             app.UseAuthorization();
 
-            //???????
+            //启用跨域
             app.UseCors("AllowSpecificOrigin");
 
             app.UseEndpoints(endpoints =>
