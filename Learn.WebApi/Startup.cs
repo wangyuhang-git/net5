@@ -99,10 +99,16 @@ namespace Learn.WebApi
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
+            //UseCors、UseAuthentication 和 UseAuthorization 必须按照以下顺序运行。
+            //UseCors 因为必须在 UseResponseCaching 之前运行。
             //启用跨域
             app.UseCors("AllowSpecificOrigin");
+            //鉴权（认证）
+            app.UseAuthentication();
+            //授权
+            app.UseAuthorization();
+
+            //app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
