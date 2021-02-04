@@ -29,6 +29,22 @@ namespace Learn.Models.Entity
         /// </summary>
         public string IdCard { get; set; }
         /// <summary>
+        /// 性别
+        /// </summary>
+        public string PersonSex { get; set; }
+        /// <summary>
+        /// 籍贯
+        /// </summary>
+        public string NativePlace { get; set; }
+        /// <summary>
+        /// 健康码色
+        /// </summary>
+        public string HealthColor { get; set; }
+        /// <summary>
+        /// 手机号码
+        /// </summary>
+        public string PersonPhone { get; set; }
+        /// <summary>
         /// 岗位
         /// </summary>
         public string PostType { get; set; }
